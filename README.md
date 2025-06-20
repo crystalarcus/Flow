@@ -1,10 +1,10 @@
-## Instagram M3 Redesigned
+## Flow
 #### A Flutter project
 *Currently under development*
 
 [Figma Design link](https://www.figma.com/file/F4b8moLStOKWqxYNdkV4o4/Instagram-(-M3-Redesigned-)?type=design&node-id=599%3A3245&mode=design&t=q77Ht4m4iaf7yEPA-1)
 
-This is a Redesigned version of **Instagram** with **Google's Material 3 Design** Guidelines.
+A **Social Media** with **Google's Material 3 Design** Guidelines.
 Currently, this is entirely designed and developed by me.
 
 If you want to **Contribute** / **Enquire about anything** / **Use this project anywhere**, contanct me, contact details are on my Github profile.
