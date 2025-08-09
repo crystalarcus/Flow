@@ -103,7 +103,7 @@ class CarouselPostViewer extends StatelessWidget {
                                     "https://drive.google.com/uc?export=view&id=$e"),
                           )))
                   .toList(),
-              options: CarouselOptions(
+              options: FlutterCarouselOptions(
                 initialPage: initPage,
                 viewportFraction: 1,
                 slideIndicator: CircularWaveSlideIndicator(

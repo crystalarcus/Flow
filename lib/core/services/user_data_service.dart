@@ -6,9 +6,7 @@ class UserDataService extends ChangeNotifier {
   bool _isLoaded = false;
   User? _user;
 
-  UserDataService(this._userRepository) {
-    _fetchData();
-  }
+  UserDataService(this._userRepository);
 
   /// Data fetching check
   bool get isLoaded => _isLoaded;
@@ -20,11 +18,11 @@ class UserDataService extends ChangeNotifier {
   final UserRepository _userRepository;
 
   /// Fetch User data from [UserRepository]
-  void _fetchData() async {
+  Future fetchData(String userID) async {
     _isLoaded = false;
     notifyListeners();
     try {
-      _user = await _userRepository.getUserData();
+      _user = await _userRepository.getUserData(userID);
     } catch (e) {
       rethrow;
     } finally {

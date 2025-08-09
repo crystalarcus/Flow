@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:redesigned/core/constants/route_names.dart';
 import 'package:redesigned/core/services/auth_service.dart';
 import 'package:redesigned/core/services/navigation_service.dart';
+import 'package:redesigned/core/services/user_data_service.dart';
 
 class SignInViewModel extends ChangeNotifier {
   final AuthService _authService;
 
   final NavigationService _navService;
 
+  final UserDataService _userDataService;
+
   User? _user;
   bool _isLoading = false;
 
-  SignInViewModel(this._authService, this._navService) {
+  SignInViewModel(this._authService, this._navService, this._userDataService) {
     _authService.userChanges.listen((user) {
       _user = user;
       _isLoading = false;
@@ -25,23 +28,30 @@ class SignInViewModel extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
 
   /// Text editing controller for username
-  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(text: "");
 
   /// Text editing controller for password
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController passwordController =
+      TextEditingController(text: "");
 
   /// Login using user entered credentials
   Future<void> onLoginPress() async {
-    _isLoading = true;
-    notifyListeners();
-    try {
-      await _authService.signInWithEmailAndPassword(
-          userNameController.text, passwordController.text);
-    } catch (e) {
-      rethrow;
-    } finally {
-      _isLoading = false;
+    if (emailController.text.isNotEmpty || passwordController.text.isNotEmpty) {
+      _isLoading = true;
       notifyListeners();
+      try {
+        UserCredential creds = await _authService.signInWithEmailAndPassword(
+            emailController.text, passwordController.text);
+        await _userDataService.fetchData(creds.user!.uid);
+      } catch (e) {
+        rethrow;
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+        _navService.go(RouteNames.HOME_SCREEN);
+      }
+    } else {
+      // TODO: Show snackbar that email/password is empty
     }
   }
 

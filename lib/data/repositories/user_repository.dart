@@ -1,10 +1,17 @@
 import 'package:redesigned/core/models/user.dart';
 import 'package:redesigned/data/local/local_user_data_source.dart';
+import 'package:redesigned/data/remote/remote_user_data_source.dart';
+
+/// [UserRepository] depends on [LocalUserDataSource] and [RemoteUserDataSource]
+/// for fetching data from local and remote sources
+/// This class acts as an abstraction layer between UserDataService and
+/// local/remote data sources
+/// First the local data is feteched/updated and then remote data is fetched/updated.
 
 /// Interface for [UserRepository]
 abstract class IUserRepository {
   /// Get or refresh user data
-  Future<User?> getUserData();
+  Future<User?> getUserData(String userID);
 
   /// Update user UserName
   Future<void> updateUserName();
@@ -29,18 +36,26 @@ abstract class IUserRepository {
 }
 
 class UserRepository implements IUserRepository {
-  UserRepository(this._localUserService);
+  UserRepository(this._localUserService, this._remoteUserDataSource);
 
   final LocalUserDataSource _localUserService;
+  final RemoteUserDataSource _remoteUserDataSource;
 
   @override
-  Future<User?> getUserData() async {
+  Future<User?> getUserData(String userID) async {
+    User? user;
     try {
-      User? user = await _localUserService.getUserData();
-      return user;
+      user = await _localUserService.getUserData();
     } catch (e) {
       rethrow;
     }
+    try {
+      user = await _remoteUserDataSource.getUserData(userID);
+    } catch (e) {
+      rethrow;
+    }
+
+    return user;
     // return User(
     //     id: '0a16b9d6-56a9-4d1a-8e2b-7c3e8f5d0b9a',
     //     userName: 'angel_wings',

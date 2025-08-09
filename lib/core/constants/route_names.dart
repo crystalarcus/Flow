@@ -5,7 +5,7 @@ class RouteNames {
   static const String SIGN_IN_SCREEN = "/sign_in";
   static const String SIGN_UP_SCREEN = "/sign_up";
   static const String FORGET_PASSWORD_SCREEN = "/forget_password";
-  static const String HOME_SCREEN = "/home";
+  static const String HOME_SCREEN = "home";
   static const String NOTIFICATION_SCREEN = "/notification";
   static const String MESSAGES_SCREEN = "/messages";
   static const String SETTINGS_SCREEN = "/settings";

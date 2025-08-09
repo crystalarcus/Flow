@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
 import 'package:redesigned/core/navigation/root_view.dart';
 import 'package:redesigned/core/services/auth_service.dart';
 import 'package:redesigned/core/services/navigation_service.dart';
+import 'package:redesigned/core/services/user_data_service.dart';
 import 'package:redesigned/core/utils/screen_transitions.dart';
 import 'package:redesigned/data/repositories/profile_repository.dart';
 import 'package:redesigned/follow_screen.dart';
@@ -23,50 +23,30 @@ import 'package:redesigned/stories_screen.dart';
 import 'package:redesigned/story_view_screen.dart';
 
 final router = GoRouter(
-
+    initialLocation: '/home',
     // Redirect User to Sign-in screen if user is not signed in
     // or if user logs out
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final authService = context.read<AuthService>();
-      final bool loggedIn = authService.isLoggedIn;
+      final bool loggedIn = await authService.isLoggedIn();
       final bool tryingToSignIn = state.matchedLocation == '/signin';
 
       // If the user is NOT logged in AND they are not already trying to sign in,
       // redirect them to the sign-in page.
       if (!loggedIn && !tryingToSignIn) {
+        print(loggedIn);
         return '/signin';
-      }
-
-      // If the user IS logged in AND they are trying to sign in (or any auth screen),
-      // redirect them to the home page
-      if (loggedIn && tryingToSignIn) {
-        return '/';
       }
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/signin',
-        builder: (context, state) => ChangeNotifierProvider<SignInViewModel>(
-          create: (_) => SignInViewModel(Provider.of<AuthService>(context),
-              context.read<NavigationService>()),
-          child: const SignInView(),
-        ),
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) => ChangeNotifierProvider<SignUpViewModel>(
-          create: (_) => SignUpViewModel(Provider.of<AuthService>(context)),
-          child: const SignUpView(),
-        ),
-      ),
-
       ShellRoute(
           pageBuilder: (context, state, child) =>
               NoTransitionPage(child: RootView(child: child)),
           routes: [
             GoRoute(
-                path: '/',
+                name: 'home',
+                path: '/home',
                 pageBuilder: (context, state) => SlideBottomTransitionPage(
                     child: ChangeNotifierProvider<HomeViewModel>(
                       create: (_) => HomeViewModel(),
@@ -94,6 +74,23 @@ final router = GoRouter(
       //       return SlideBottomTransitionPage(
       //           child: const ReelsScreen(), state: state);
       //     }),
+      GoRoute(
+        path: '/signin',
+        builder: (context, state) => ChangeNotifierProvider<SignInViewModel>(
+          create: (_) => SignInViewModel(
+              Provider.of<AuthService>(context),
+              context.read<NavigationService>(),
+              context.read<UserDataService>()),
+          child: const SignInView(),
+        ),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => ChangeNotifierProvider<SignUpViewModel>(
+          create: (_) => SignUpViewModel(Provider.of<AuthService>(context)),
+          child: const SignUpView(),
+        ),
+      ),
 
       GoRoute(
           path: '/stories',

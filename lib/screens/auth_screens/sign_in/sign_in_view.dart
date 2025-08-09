@@ -27,17 +27,16 @@ class SignInView extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 TextField(
-                  controller:
-                      context.read<SignInViewModel>().userNameController,
+                  controller: context.read<SignInViewModel>().emailController,
                   decoration: const InputDecoration(
-                      border: OutlineInputBorder(), hintText: "Email"),
+                      border: OutlineInputBorder(), labelText: "Email"),
                 ),
                 const SizedBox(height: 32),
                 TextField(
                   controller:
                       context.read<SignInViewModel>().passwordController,
                   decoration: const InputDecoration(
-                      border: OutlineInputBorder(), hintText: "Password"),
+                      border: OutlineInputBorder(), labelText: "Password"),
                 ),
                 const SizedBox(height: 8),
                 Align(

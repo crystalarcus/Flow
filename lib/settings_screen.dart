@@ -7,6 +7,7 @@ import 'package:redesigned/Settings%20SubScreens/interests_screen.dart';
 import 'package:redesigned/Settings%20SubScreens/notification_settings_screen.dart';
 import 'package:redesigned/Settings%20SubScreens/preferences_screen.dart';
 import 'package:redesigned/Settings%20SubScreens/privacy_screen.dart';
+import 'package:redesigned/core/services/auth_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -200,6 +201,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: const Icon(Icons.info_outline),
             title: const Text("About"),
             subtitle: const Text("App info and credits"),
+          ),
+          ListTile(
+            titleTextStyle: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w500),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            onTap: () {
+              AuthService().signOut();
+            },
+            leading: const Icon(Icons.logout),
+            title: const Text("Logout"),
+            subtitle: const Text("Log out your account"),
           ),
           /*
         

@@ -7,14 +7,23 @@ class AuthService extends ChangeNotifier {
   /// Currently signed in User
   User? _currentUser;
 
-  AuthService() {
+  AuthService._() {
     _firebaseAuth.authStateChanges().listen((user) {
       _currentUser = user;
       notifyListeners();
     });
   }
+  static AuthService? _instance;
+  factory AuthService() {
+    _instance = AuthService._();
+    return _instance!;
+  }
   User? get currentUser => _currentUser;
-  bool get isLoggedIn => _currentUser != null;
+  Future<bool> isLoggedIn() async {
+    final user = _firebaseAuth.currentUser;
+    return user != null;
+  }
+
   // Stream to listen to authentication state changes
   Stream<User?> get userChanges => _firebaseAuth.authStateChanges();
 
