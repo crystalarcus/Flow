@@ -115,7 +115,7 @@ class _ShareSheetState extends State<ShareSheet> {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 3,
               shrinkWrap: true,
-              children: recentSent
+              children: recentlySent
                   .map((e) => ProfileView(
                         person: getPersonFromUserName(e),
                         size: 74,
@@ -129,16 +129,16 @@ class _ShareSheetState extends State<ShareSheet> {
   }
 }
 
-const List<String> recentSent = [
+const List<String> recentlySent = [
+  "sofia_garxcia",
+  "is.this.helen.32",
   "director_hu54",
-  "furina_sunshine",
-  "cook.with.shogun",
-  "not.a.child",
-  "eons_adrift",
-  "skir7x",
-  "library_momy",
-  "hat_girl",
-  "all_knowing_kid",
-  "frozen_momy",
-  "princess_purple",
+  "mr.zhang",
+  "chris_t71",
+  "i.am.jenny.ig",
+  "emma_wil71",
+  "your_sophie_here",
+  "conqurer_of_demons",
+  "this.is.liam123",
+  "jack_mil_25",
 ];

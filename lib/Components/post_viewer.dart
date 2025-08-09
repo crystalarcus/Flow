@@ -109,8 +109,7 @@ class CarouselPostViewer extends StatelessWidget {
                 slideIndicator: CircularWaveSlideIndicator(
                   slideIndicatorOptions: const SlideIndicatorOptions(
                     indicatorRadius: 4.8,
-                    indicatorBackgroundColor:
-                        Color.fromARGB(98, 190, 190, 190),
+                    indicatorBackgroundColor: Color.fromARGB(98, 190, 190, 190),
                     currentIndicatorColor: Colors.white,
                   ),
                 ),

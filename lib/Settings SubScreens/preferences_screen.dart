@@ -130,7 +130,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               }),
           SwitchListTile(
               title: const Text("Floating Searchbar"),
-              subtitle: const Text("Make search bar reappears when you scroll up"),
+              subtitle:
+                  const Text("Make search bar reappears when you scroll up"),
               secondary: const Icon(Icons.search),
               value: isSearchFloating,
               onChanged: (bool value) {

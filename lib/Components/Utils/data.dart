@@ -441,7 +441,7 @@ Person getPersonFromUserName(String userName) {
       return element.person;
     }
   }
-  throw (Error());
+  throw Exception("USER NOT FOUND : $userName");
 }
 
 Account getAccountFromUserName(String userName) {

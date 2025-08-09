@@ -21,6 +21,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
   void goToChat(int id) {
     controller.scrollTo(index: id, duration: Durations.medium1);
   }
+
   late final TextEditingController textEditingController;
   @override
   void initState() {
@@ -124,7 +125,7 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                   child: SizedBox(
                       height: 56,
                       child: TextField(
-                        onChanged: (text){
+                        onChanged: (text) {
                           setState(() {
                             textEditingController.text = text;
                           });
@@ -170,24 +171,33 @@ class _MobileChatScreenState extends State<MobileChatScreen> {
                                     size: 24,
                                   ),
                                 ),
-                                textEditingController.text==""?   IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.mic,
-                                    size: 24,
-                                  ),
-                                ):IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      chats.insert(0,ChatText(text: textEditingController.text,sentByUser: true, time: "7:24 pm", textid: chats.length));
-                                      textEditingController.text = "";
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.send_outlined,
-                                    size: 24,
-                                  ),
-                                ) ,
+                                textEditingController.text == ""
+                                    ? IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(
+                                          Icons.mic,
+                                          size: 24,
+                                        ),
+                                      )
+                                    : IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            chats.insert(
+                                                0,
+                                                ChatText(
+                                                    text: textEditingController
+                                                        .text,
+                                                    sentByUser: true,
+                                                    time: "7:24 pm",
+                                                    textid: chats.length));
+                                            textEditingController.text = "";
+                                          });
+                                        },
+                                        icon: const Icon(
+                                          Icons.send_outlined,
+                                          size: 24,
+                                        ),
+                                      ),
                                 const SizedBox(width: 4)
                               ],
                             ),
@@ -589,7 +599,8 @@ class _UserChatState extends State<UserChat> {
                       trailingIcon: const Icon(Icons.delete_outline),
                       child: const Text("Delete for you"),
                       onPressed: () {},
-                    ),MenuItemButton(
+                    ),
+                    MenuItemButton(
                       trailingIcon: const Icon(Icons.keyboard_return_outlined),
                       child: const Text("Unsend"),
                       onPressed: () {},

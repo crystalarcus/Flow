@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
 import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/profile_screen.dart';
+import 'package:redesigned/screens/profile/profile_view.dart';
 
 class InterestsScreen extends StatefulWidget {
   const InterestsScreen({super.key});
@@ -253,8 +253,7 @@ class FavouritesItem extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProfileScreen(
-                  acc: getAccountFromUserName(p.userName), newStories: true),
+              builder: (context) => const ProfileView(),
             ));
       },
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),

@@ -46,7 +46,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.arrow_back)),
-                  hintText: "Search Instagram",
+                  hintText: "Search Flow",
                   suffixIcon: IconButton(
                       onPressed: () {
                         controller.clear();

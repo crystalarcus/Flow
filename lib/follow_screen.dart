@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/profile_screen.dart';
+import 'package:redesigned/screens/profile/profile_view.dart';
 import 'package:redesigned/main.dart';
 // import 'package:redesigned/main.dart';
 

@@ -84,7 +84,9 @@ class _ProfileBottomsheetState extends State<ProfileBottomsheet> {
                       height: 50,
                       child: OutlinedButton.icon(
                           onPressed: () {
-                            context.push('/profile/true', extra: widget.acc);
+                            context.push(
+                                '/profile/a1b2c3d4-e5f6-4789-90ab-cdef01234567}',
+                                extra: widget.acc);
                           },
                           icon: const Icon(Icons.arrow_right_alt),
                           label: const Text("See Profile")))),
