@@ -1,0 +1,164 @@
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:redesigned/core/models/story.dart';
+import 'package:redesigned/core/navigation/root_view.dart';
+import 'package:redesigned/core/services/auth_service.dart';
+import 'package:redesigned/core/services/navigation_service.dart';
+import 'package:redesigned/core/services/user_data_service.dart';
+import 'package:redesigned/core/utils/screen_transitions.dart';
+import 'package:redesigned/data/mock_data.dart';
+import 'package:redesigned/data/repositories/profile_repository.dart';
+import 'package:redesigned/screens/auth_screens/sign_in/sign_in_view.dart';
+import 'package:redesigned/screens/auth_screens/sign_in/sign_in_view_model.dart';
+import 'package:redesigned/screens/auth_screens/sign_up/sign_up_view.dart';
+import 'package:redesigned/screens/auth_screens/sign_up/sign_up_view_model.dart';
+import 'package:redesigned/screens/follow/follow_view.dart';
+import 'package:redesigned/screens/follow/follow_view_model.dart';
+import 'package:redesigned/screens/home/home_view.dart';
+import 'package:redesigned/screens/home/home_view_model.dart';
+import 'package:redesigned/screens/messages/messages_view.dart';
+import 'package:redesigned/screens/messages/messages_view_model.dart';
+import 'package:redesigned/screens/notifications/notifications_view.dart';
+import 'package:redesigned/screens/notifications/notifications_view_model.dart';
+import 'package:redesigned/screens/profile/profile_view.dart';
+import 'package:redesigned/screens/profile/profile_view_model.dart';
+import 'package:redesigned/screens/reels/reels_view.dart';
+import 'package:redesigned/screens/reels/reels_view_model.dart';
+import 'package:redesigned/screens/settings/settings_view.dart';
+import 'package:redesigned/screens/settings/settings_view_model.dart';
+import 'package:redesigned/screens/stories/stories_view.dart';
+import 'package:redesigned/screens/stories/stories_view_model.dart';
+import 'package:redesigned/screens/story_view/story_view.dart';
+import 'package:redesigned/screens/story_view/story_view_model.dart';
+
+final router = GoRouter(
+    initialLocation: '/home',
+    // Redirect User to Sign-in screen if user is not signed in
+    // or if user logs out
+    redirect: (context, state) async {
+      final authService = context.read<AuthService>();
+      final bool loggedIn = await authService.isLoggedIn();
+      final bool tryingToSignIn = state.matchedLocation == '/signin';
+
+      // If the user is NOT logged in AND they are not already trying to sign in,
+      // redirect them to the sign-in page.
+      if (!loggedIn && !tryingToSignIn) {
+        print(loggedIn);
+        return '/signin';
+      }
+      return null;
+    },
+    routes: [
+      ShellRoute(
+          pageBuilder: (context, state, child) =>
+              NoTransitionPage(child: RootView(child: child)),
+          routes: [
+            GoRoute(
+                name: 'home',
+                path: '/home',
+                pageBuilder: (context, state) => SlideBottomTransitionPage(
+                    child: ChangeNotifierProvider<HomeViewModel>(
+                      create: (_) => HomeViewModel(),
+                      child: const HomeScreen(),
+                    ),
+                    state: state)),
+            GoRoute(
+                path: '/reels',
+                pageBuilder: (context, state) => SlideBottomTransitionPage(
+                    child: ChangeNotifierProvider<ReelsViewModel>(
+                      create: (_) => ReelsViewModel(),
+                      child: const ReelsView(),
+                    ),
+                    state: state)),
+            GoRoute(
+                path: '/notification',
+                pageBuilder: (context, state) {
+                  return SlideBottomTransitionPage(
+                      child: ChangeNotifierProvider<NotificationsViewModel>(
+                        create: (_) => NotificationsViewModel(),
+                        child: const NotificationsView(),
+                      ),
+                      state: state);
+                }),
+            GoRoute(
+                path: '/messages',
+                pageBuilder: (context, state) => SlideBottomTransitionPage(
+                    child: ChangeNotifierProvider<MessagesViewModel>(
+                      create: (_) => MessagesViewModel(),
+                      child: const MessagesView(),
+                    ),
+                    state: state)),
+            GoRoute(
+                path: '/settings',
+                pageBuilder: (context, state) => SlideBottomTransitionPage(
+                    child: ChangeNotifierProvider<SettingsViewModel>(
+                      create: (_) =>
+                          SettingsViewModel(context.read<AuthService>()),
+                      child: const SettingsView(),
+                    ),
+                    state: state)),
+          ]),
+      GoRoute(
+        path: '/signin',
+        builder: (context, state) => ChangeNotifierProvider<SignInViewModel>(
+          create: (_) => SignInViewModel(
+              Provider.of<AuthService>(context),
+              context.read<NavigationService>(),
+              context.read<UserDataService>()),
+          child: const SignInView(),
+        ),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => ChangeNotifierProvider<SignUpViewModel>(
+          create: (_) => SignUpViewModel(Provider.of<AuthService>(context)),
+          child: const SignUpView(),
+        ),
+      ),
+      GoRoute(
+          path: '/stories',
+          pageBuilder: ((context, state) => SlideTransitionPage(
+                state: state,
+                child: ChangeNotifierProvider<StoriesViewModel>(
+                  create: (_) => StoriesViewModel(),
+                  child: const StoriesView(),
+                ),
+              ))),
+      GoRoute(
+        path: '/profile/:userID',
+        pageBuilder: ((context, state) => SlideTransitionPage(
+              state: state,
+              child: ChangeNotifierProvider<ProfileViewModel>(
+                create: (_) => ProfileViewModel(ProfileRepository(
+                    state.pathParameters['userID'] as String)),
+                child: const ProfileView(),
+              ),
+            )),
+      ),
+      GoRoute(
+          path: '/follow/:name',
+          pageBuilder: ((context, state) {
+            String name = state.pathParameters['name'] ?? '';
+            return SlideTransitionPage(
+                state: state,
+                child: ChangeNotifierProvider<FollowViewModel>(
+                  create: (_) => FollowViewModel(
+                      name: name,
+                      followers: followersList,
+                      following: followersList,
+                      context: context),
+                  child: const FollowView(),
+                ));
+          })),
+      GoRoute(
+          path: '/storyview',
+          pageBuilder: ((context, state) {
+            var storyGroup = state.extra as StoryGroup;
+            return SlideTransitionPage(
+                state: state,
+                child: ChangeNotifierProvider<StoryViewModel>(
+                  create: (_) => StoryViewModel(storyGroup),
+                  child: const StoryView(),
+                ));
+          })),
+    ]);
