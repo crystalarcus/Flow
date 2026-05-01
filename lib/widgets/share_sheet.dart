@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/Components/profile_view.dart';
+import 'package:redesigned/data/mock_data.dart';
+import 'package:redesigned/widgets/profile_avatar.dart';
 
 class ShareSheet extends StatefulWidget {
   const ShareSheet({super.key, required this.controller});

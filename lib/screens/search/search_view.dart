@@ -1,41 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/Components/profile_view.dart';
+import 'package:provider/provider.dart';
+import 'package:redesigned/screens/search/search_view_model.dart';
+import 'package:redesigned/widgets/profile_avatar.dart';
 
-class SearchInstaScreen extends StatefulWidget {
-  const SearchInstaScreen({super.key});
-
-  @override
-  State<SearchInstaScreen> createState() => _SearchInstaScreenState();
-}
-
-class _SearchInstaScreenState extends State<SearchInstaScreen> {
-  late TextEditingController controller;
-  @override
-  void initState() {
-    super.initState();
-    controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+class SearchView extends StatelessWidget {
+  const SearchView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<SearchViewModel>();
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
         backgroundColor: colorScheme.surface,
         body: ListView(
           children: [
             TextField(
-              controller: controller,
-              onChanged: (value) {
-                if (value.isEmpty) {}
-              },
+              controller: viewModel.searchController,
+              onChanged: viewModel.onSearchChanged,
               decoration: InputDecoration(
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 22, horizontal: 4),
@@ -48,9 +30,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
                       icon: const Icon(Icons.arrow_back)),
                   hintText: "Search Flow",
                   suffixIcon: IconButton(
-                      onPressed: () {
-                        controller.clear();
-                      },
+                      onPressed: viewModel.onClearSearch,
                       icon: const Icon(Icons.clear))),
             ),
             const SizedBox(height: 16),
@@ -59,7 +39,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
               child: Row(
                 children: [
                   const SizedBox(width: 6),
-                  ...filterItems.map((element) => Padding(
+                  ...viewModel.filters.map((element) => Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: FilterChip(
                           label: Text(element),
@@ -80,7 +60,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
                 color: colorScheme.surfaceContainer,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: recentSearchs
+                  children: viewModel.recents
                       .map((element) => RecentItem(
                             title: element,
                           ))
@@ -94,7 +74,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: searchAccounts
+                children: viewModel.profiles
                     .map((element) => Padding(
                           padding: const EdgeInsets.all(12),
                           child: ProfileAvatarTouchable(
@@ -116,29 +96,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   crossAxisCount: 3,
-                  children: [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21
-                  ]
+                  children: List.generate(21, (index) => index)
                       .map((e) => SizedBox.square(
                           child: GestureDetector(
                               onTap: () {},
@@ -189,22 +147,3 @@ class Header extends StatelessWidget {
     );
   }
 }
-
-const filterItems = <String>["Profiles", "Posts", "Reels", "Photos"];
-
-const recentSearchs = <String>[
-  "furina_sunshine",
-  "kamisato.ayato",
-  "cook.with.shogun",
-  "princess_purple",
-];
-
-var searchAccounts = <Account>[
-  accounts[3],
-  accounts[6],
-  accounts[19],
-  accounts[15],
-  accounts[23],
-  accounts[16],
-  accounts[7],
-];

@@ -6,7 +6,7 @@ import 'package:redesigned/screens/home/home_view_model.dart';
 import 'package:redesigned/screens/home/home_data.dart';
 import 'package:redesigned/screens/home/stories_sheet_view.dart';
 import 'package:side_sheet/side_sheet.dart';
-import 'package:redesigned/Components/posts.dart';
+import 'package:redesigned/widgets/post_widget.dart';
 
 class DesktopHomeView extends StatefulWidget {
   const DesktopHomeView({super.key});

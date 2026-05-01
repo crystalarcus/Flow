@@ -2,8 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/main.dart';
+import 'package:redesigned/core/models/models.dart';
 import 'package:redesigned/core/services/app_service.dart';
 import 'package:redesigned/screens/notifications/notifications_view_model.dart';
 
@@ -199,16 +198,21 @@ class _NotifWidgetState extends State<NotifWidget> {
                     ),
                     const SizedBox(width: 16),
                     if (type == NotifType.follow)
-                      context.watch<AppService>().isFollowing(widget.notification.notifier)
+                      context
+                              .watch<AppService>()
+                              .isFollowing(widget.notification.notifier)
                           ? TextButton(
                               onPressed: () {
-                                context.read<AppService>().removeFollower(widget.notification.notifier);
+                                context.read<AppService>().removeFollower(
+                                    widget.notification.notifier);
                               },
                               child: const Text("Following"),
                             )
                           : FilledButton(
                               onPressed: () {
-                                context.read<AppService>().addFollower(widget.notification.notifier);
+                                context
+                                    .read<AppService>()
+                                    .addFollower(widget.notification.notifier);
                               },
                               child: const Text("Follow"),
                             )

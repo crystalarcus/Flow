@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/posts.dart';
-import 'package:redesigned/main.dart';
+import 'package:redesigned/core/models/models.dart';
 
 class ProfileBottomsheet extends StatefulWidget {
   const ProfileBottomsheet({super.key, required this.acc});

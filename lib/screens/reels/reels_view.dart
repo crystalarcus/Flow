@@ -1,32 +1,29 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
+import 'package:provider/provider.dart';
+import 'package:redesigned/core/models/reel_model.dart';
+import 'package:redesigned/screens/reels/reels_view_model.dart';
 
-class ReelsScreen extends StatefulWidget {
-  const ReelsScreen({super.key});
+class ReelsView extends StatelessWidget {
+  const ReelsView({super.key});
 
-  @override
-  State<ReelsScreen> createState() => _ReelsScreenState();
-}
-
-class _ReelsScreenState extends State<ReelsScreen> {
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<ReelsViewModel>();
+
     return Scaffold(
         body: Stack(
       children: [
-        ListView(
-          children: <Widget>[ReelWidget(reel: reels.first)],
+        ListView.builder(
+          itemCount: viewModel.reelsData.length,
+          itemBuilder: (context, index) =>
+              ReelWidget(reel: viewModel.reelsData[index]),
         ),
         SizedBox(
           height: 64,
           child: AppBar(
             leading: IconButton(
-                onPressed: () {
-                  context.go('/');
-                },
+                onPressed: () => viewModel.onBackPress(context),
                 icon: const Icon(Icons.arrow_back)),
             title: const Text("Reels"),
             toolbarHeight: 64,
@@ -37,59 +34,14 @@ class _ReelsScreenState extends State<ReelsScreen> {
   }
 }
 
-class ReelWidget extends StatefulWidget {
+class ReelWidget extends StatelessWidget {
   const ReelWidget({super.key, required this.reel});
   final Reel reel;
-  @override
-  State<ReelWidget> createState() => _ReelWidgetState();
-}
-
-class _ReelWidgetState extends State<ReelWidget> {
-  // late final Player player = Player();
-  // late final controller = VideoController(player);
-  double videoProgress = 0.5;
-
-  @override
-  void initState() {
-    // player.open(Media(widget.reel.pathToMedia));
-    // player.stream.position.listen((event) {
-    //   setState(() {
-    //     videoProgress = event.inMilliseconds.toDouble();
-    //   });
-    // });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // player.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // SizedBox(
-        //     width: MediaQuery.of(context).size.width,
-        //     height: MediaQuery.of(context).size.height,
-        //     child: Video(
-        //       controller: controller,
-        //       controls: (state) => Row(
-        //         children: [
-        //           IconButton(
-        //               onPressed: () {
-        //                 setState(() {
-        //                   player.state.playing ? player.pause() : player.play();
-        //                 });
-        //               },
-        //               icon: Icon(player.state.playing
-        //                   ? Icons.pause
-        //                   : Icons.play_arrow))
-        //         ],
-        //       ),
-        //     )),
-
         SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
@@ -116,21 +68,22 @@ class _ReelWidgetState extends State<ReelWidget> {
                                       .colorScheme
                                       .onSurfaceVariant),
                               fit: BoxFit.contain,
-                              imageUrl: widget.reel.person.pfpPath,
+                              imageUrl: reel.person.profilePicturePath,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Column(
                             mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                widget.reel.person.name,
+                                reel.person.name,
                                 style: const TextStyle(
                                     fontSize: 16, color: Colors.white),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                widget.reel.person.userName,
+                                reel.person.userName,
                                 style: const TextStyle(
                                     fontSize: 12, color: Colors.white),
                               ),
@@ -139,12 +92,6 @@ class _ReelWidgetState extends State<ReelWidget> {
                         ],
                       )),
                   const SizedBox(height: 16),
-                  // LinearProgressIndicator(
-                  //   value: player.state.playing
-                  //       ? videoProgress /
-                  //           player.state.duration.inMilliseconds.toDouble()
-                  //       : 0,
-                  // )
                 ],
               ),
             )),

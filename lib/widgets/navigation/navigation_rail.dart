@@ -4,9 +4,9 @@
 
 import 'package:flutter/material.dart';
 
-import 'Utils/animations.dart';
-import 'Utils/destinations.dart';
-import 'Utils/nav_rail_transition.dart';
+import 'package:redesigned/core/utils/animations.dart';
+import 'package:redesigned/widgets/navigation/destinations.dart';
+import 'package:redesigned/widgets/navigation/nav_rail_transition.dart';
 
 class DisappearingNavigationRail extends StatelessWidget {
   const DisappearingNavigationRail({

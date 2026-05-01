@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/core/models/models.dart';
 
 class StoryWidget extends StatelessWidget {
   final Person person;
@@ -18,9 +18,10 @@ class StoryWidget extends StatelessWidget {
                 context.push('/storyview',
                     extra: StoryGroup(
                         person: Person(
+                            id: '',
                             name: 'Raiden Shogun',
                             userName: 'cook.with.shogun',
-                            pfpPath: 'images/raiden.png'),
+                            profilePicturePath: 'images/raiden.png'),
                         stories: [
                           Story(
                               duration: const Duration(seconds: 7),
@@ -67,7 +68,7 @@ class StoryWidget extends StatelessWidget {
                         Icons.account_circle_rounded,
                         color: Theme.of(context).colorScheme.onSurfaceVariant),
                     fit: BoxFit.contain,
-                    imageUrl: person.pfpPath,
+                    imageUrl: person.profilePicturePath,
                   ),
                 ),
               )),

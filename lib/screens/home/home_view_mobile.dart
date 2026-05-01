@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:redesigned/screens/home/home_view_model.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/open_container.dart';
-import 'package:redesigned/Components/posts.dart';
+import 'package:redesigned/core/models/models.dart';
+import 'package:redesigned/screens/search/search_view_model.dart';
+import 'package:redesigned/widgets/utils/open_container.dart';
+import 'package:redesigned/widgets/post_widget.dart';
 import 'package:redesigned/core/services/app_service.dart';
-import 'package:redesigned/search_insta_screen.dart';
+import 'package:redesigned/screens/search/search_view.dart';
 
 class MobileHomeView extends StatelessWidget {
   final BoxConstraints constraints;
@@ -97,7 +98,11 @@ class MobileHomeView extends StatelessWidget {
                         action();
                       },
                     ),
-                    openBuilder: (context, action) => const SearchInstaScreen(),
+                    openBuilder: (context, action) =>
+                        ChangeNotifierProvider<SearchViewModel>(
+                      create: (_) => SearchViewModel(),
+                      child: const SearchView(),
+                    ),
                   ),
                 ),
               ),

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:redesigned/Components/Utils/data.dart';
+import 'package:redesigned/data/mock_data.dart';
 
-import 'Utils/animations.dart';
-import 'Utils/bottom_bar_transition.dart';
+import 'package:redesigned/core/utils/animations.dart';
+import 'package:redesigned/widgets/navigation/bottom_bar_transition.dart';
 
 class DisappearingBottomNavigationBar extends StatelessWidget {
   const DisappearingBottomNavigationBar({

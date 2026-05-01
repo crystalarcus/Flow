@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:redesigned/Components/Utils/data.dart';
+import 'package:redesigned/data/mock_data.dart';
 import 'package:redesigned/core/services/app_service.dart';
 import 'package:redesigned/screens/follow/widgets/follow_widget.dart';
 import 'package:redesigned/screens/profile/profile_view_model.dart';

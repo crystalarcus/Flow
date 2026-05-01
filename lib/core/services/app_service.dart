@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
+import 'package:redesigned/core/models/models.dart';
+import 'package:redesigned/data/mock_data.dart';
 
 class AppService extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;

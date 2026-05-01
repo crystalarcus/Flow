@@ -2,12 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/Components/Utils/open_container.dart';
-import 'package:redesigned/chat_screen.dart';
+import 'package:redesigned/core/models/models.dart';
+import 'package:redesigned/data/mock_data.dart';
+import 'package:redesigned/widgets/utils/open_container.dart';
+import 'package:redesigned/screens/messages/chat/chat_view.dart';
+import 'package:redesigned/screens/messages/chat/chat_view_model.dart';
 import 'package:redesigned/screens/messages/messages_view_model.dart';
-import 'package:redesigned/search_message_screen.dart';
+import 'package:redesigned/screens/messages/search/search_message_view.dart';
+import 'package:redesigned/screens/messages/search/search_message_view_model.dart';
 
 class MessagesView extends StatelessWidget {
   const MessagesView({super.key});
@@ -107,8 +109,9 @@ class MessageScreenMobile extends StatelessWidget {
                     close();
                   },
                 ),
-                openBuilder: (context, _) => MobileChatScreen(
-                  person: e.person,
+                openBuilder: (context, _) => ChangeNotifierProvider<ChatViewModel>(
+                  create: (_) => ChatViewModel(e.person),
+                  child: const ChatView(),
                 ),
               )),
           const SizedBox(height: 120)
@@ -233,7 +236,10 @@ class MessageScreenDesktop extends StatelessWidget {
                 child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
               child: viewModel.currentActive != null
-                  ? DesktopChatScreen(person: viewModel.currentActive!)
+                  ? ChangeNotifierProvider<ChatViewModel>(
+                      create: (_) => ChatViewModel(viewModel.currentActive!),
+                      child: const ChatView(),
+                    )
                   : Container(
                       decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface),
@@ -457,6 +463,9 @@ class MessageSearchAnchor extends StatelessWidget {
                     weight: 600,
                   )),
             ),
-        openBuilder: (context, controller) => const SearchMessageScreen());
+        openBuilder: (context, controller) => ChangeNotifierProvider<SearchMessageViewModel>(
+          create: (_) => SearchMessageViewModel(),
+          child: const SearchMessageView(),
+        ));
   }
 }

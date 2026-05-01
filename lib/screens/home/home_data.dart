@@ -1,6 +1,6 @@
 // ignore_for_file: constant_identifier_names
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart'; // Assuming Post, Person are defined here
+import 'package:redesigned/core/models/models.dart';
+import 'package:redesigned/data/mock_data.dart'; // Assuming Post, Person are defined here
 
 // Enum for filters
 enum Filters { Popular, Arts, Music, Funny, Cats, Cooking, Memes }

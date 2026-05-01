@@ -1,21 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/main.dart';
+import 'package:provider/provider.dart';
+import 'package:redesigned/core/models/person.dart';
+import 'package:redesigned/screens/messages/search/search_message_view_model.dart';
 
-class SearchMessageScreen extends StatefulWidget {
-  const SearchMessageScreen({super.key});
+class SearchMessageView extends StatelessWidget {
+  const SearchMessageView({super.key});
 
-  @override
-  State<SearchMessageScreen> createState() => _SearchScreeMessagenState();
-}
-
-class _SearchScreeMessagenState extends State<SearchMessageScreen> {
-  List<String> selected = [];
-
-  Widget header(String title) {
+  Widget _header(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Text(
@@ -30,6 +23,8 @@ class _SearchScreeMessagenState extends State<SearchMessageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<SearchMessageViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: PreferredSize(
@@ -54,9 +49,7 @@ class _SearchScreeMessagenState extends State<SearchMessageScreen> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () => viewModel.onBackPress(context),
                     icon: const Icon(Icons.arrow_back),
                   ),
                 )),
@@ -65,28 +58,22 @@ class _SearchScreeMessagenState extends State<SearchMessageScreen> {
       ),
       body: ListView(
         children: <Widget>[
-          header("Recent"),
+          _header(context, "Recent"),
           SizedBox(
             height: 90,
             child: ListView(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                children: suggestedPeople
+                children: viewModel.recents
                     .map((e) => SuggestedWidget(person: e))
                     .toList()),
           ),
           const SizedBox(height: 8),
-          header("Suggested"),
-          ...myFollowersConst.map((e) => ListTile(
+          _header(context, "Suggested"),
+          ...viewModel.suggested.map((e) => ListTile(
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                onTap: () {
-                  setState(() {
-                    selected.contains(e.userName)
-                        ? selected.remove(e.userName)
-                        : selected.add(e.userName);
-                  });
-                },
+                onTap: () => viewModel.toggleSelection(e.userName),
                 title: Text(e.name),
                 subtitle: Text(e.userName),
                 leading: CircleAvatar(
@@ -100,10 +87,10 @@ class _SearchScreeMessagenState extends State<SearchMessageScreen> {
                         Icons.account_circle_rounded,
                         color: Theme.of(context).colorScheme.onSurfaceVariant),
                     fit: BoxFit.contain,
-                    imageUrl: e.pfpPath,
+                    imageUrl: e.profilePicturePath,
                   ),
                 ),
-                trailing: selected.contains(e.userName)
+                trailing: viewModel.selectedUserNames.contains(e.userName)
                     ? const CircleAvatar(
                         radius: 16,
                         child: Icon(
@@ -141,7 +128,7 @@ class SuggestedWidget extends StatelessWidget {
               placeholder: (context, url) => Icon(Icons.account_circle_rounded,
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               fit: BoxFit.contain,
-              imageUrl: person.pfpPath,
+              imageUrl: person.profilePicturePath,
             ),
           ),
           const SizedBox(height: 6),
@@ -158,13 +145,3 @@ class SuggestedWidget extends StatelessWidget {
     );
   }
 }
-
-List<Person> suggestedPeople = [
-  accounts[13].person,
-  accounts[12].person,
-  accounts[9].person,
-  accounts[18].person,
-  accounts[14].person,
-  accounts[15].person,
-  accounts[6].person,
-];

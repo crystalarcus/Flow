@@ -27,14 +27,19 @@ class MainApp extends StatelessWidget {
           return MaterialApp.router(
             routerConfig: context.read<GoRouter>(),
             theme: ThemeData.from(
-              textTheme: GoogleFonts.manropeTextTheme(),
-              colorScheme: ColorScheme.fromSeed(seedColor: appService.seedColor),
+              textTheme:
+                  GoogleFonts.manropeTextTheme(ThemeData.light().textTheme),
+              colorScheme:
+                  ColorScheme.fromSeed(seedColor: appService.seedColor),
+              useMaterial3: true,
             ),
             darkTheme: ThemeData.from(
-                textTheme: GoogleFonts.manropeTextTheme(),
+                textTheme:
+                    GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme),
                 colorScheme: ColorScheme.fromSeed(
                     seedColor: appService.seedColor,
-                    brightness: Brightness.dark)),
+                    brightness: Brightness.dark),
+                useMaterial3: true),
             themeMode: appService.themeMode,
             debugShowCheckedModeBanner: false,
           );

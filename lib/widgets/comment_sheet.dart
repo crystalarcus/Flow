@@ -3,9 +3,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:redesigned/Components/Utils/expansion_view.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
+import 'package:redesigned/widgets/utils/expansion_view.dart';
+import 'package:redesigned/core/models/models.dart';
+import 'package:redesigned/data/mock_data.dart';
 
 class CommentSheet extends StatefulWidget {
   const CommentSheet({super.key, required this.controller});

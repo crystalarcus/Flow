@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:redesigned/Components/Utils/animations.dart';
-import 'package:redesigned/Components/Utils/open_container.dart'
+import 'package:redesigned/core/utils/animations.dart';
+import 'package:redesigned/widgets/utils/open_container.dart'
     as container_transform;
-import 'package:redesigned/Components/disappearing_bottom_navigation_bar.dart';
-import 'package:redesigned/Components/disappearing_navigation_rail.dart';
-import 'package:redesigned/new_chat_screen.dart';
+import 'package:redesigned/widgets/navigation/bottom_navigation_bar.dart';
+import 'package:redesigned/widgets/navigation/navigation_rail.dart';
+import 'package:redesigned/screens/messages/new_chat/new_chat_view.dart';
+import 'package:redesigned/screens/messages/new_chat/new_chat_view_model.dart';
 import 'package:redesigned/core/services/app_service.dart';
 import 'package:provider/provider.dart';
 
@@ -185,7 +186,10 @@ class _RootViewState extends State<RootView>
                       },
                       icon: const Icon(Icons.edit_outlined),
                       label: const Text("Chat")),
-              openBuilder: (context, controller) => const NewChatScreen())
+              openBuilder: (context, controller) =>
+                  ChangeNotifierProvider<NewChatViewModel>(
+                      create: (_) => NewChatViewModel(),
+                      child: const NewChatView()))
         ],
       );
 

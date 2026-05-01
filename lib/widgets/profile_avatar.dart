@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/core/models/models.dart';
 
 class ProfileAvatarWidget extends StatelessWidget {
   const ProfileAvatarWidget({super.key, required this.person, this.size});

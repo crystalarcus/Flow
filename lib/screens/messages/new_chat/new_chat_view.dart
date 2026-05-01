@@ -1,24 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/main.dart';
+import 'package:provider/provider.dart';
+import 'package:redesigned/core/models/person.dart';
+import 'package:redesigned/data/mock_data.dart';
+import 'package:redesigned/screens/messages/new_chat/new_chat_view_model.dart';
 
-class NewChatScreen extends StatefulWidget {
-  const NewChatScreen({super.key});
+class NewChatView extends StatelessWidget {
+  const NewChatView({super.key});
 
-  @override
-  State<NewChatScreen> createState() => _NewChatScreenState();
-}
-
-class _NewChatScreenState extends State<NewChatScreen> {
-  List<String> selected = [];
-  SearchController controller = SearchController();
-  String search = "";
-  bool firstSearch = true;
-  List<Person> shownAccouns = myFollowersConst;
-  Widget header(String title) {
+  Widget _header(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Text(
@@ -33,25 +24,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    controller.addListener(() {
-      setState(() {
-        if (controller.text == "") {
-          firstSearch = true;
-          shownAccouns = myFollowersConst;
-        } else {
-          firstSearch = false;
-          shownAccouns = myFollowersConst
-              .where((element) =>
-                  element.name
-                      .toLowerCase()
-                      .contains(controller.text.toLowerCase()) ||
-                  element.userName
-                      .toLowerCase()
-                      .contains(controller.text.toLowerCase()))
-              .toList();
-        }
-      });
-    });
+    final viewModel = context.watch<NewChatViewModel>();
+
     return Scaffold(
       floatingActionButton: AnimatedSwitcher(
         duration: Durations.medium2,
@@ -63,7 +37,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           scale: animation,
           child: child,
         ),
-        child: selected.isNotEmpty
+        child: viewModel.selectedUserNames.isNotEmpty
             ? FloatingActionButton.extended(
                 label: const Text("Chat"),
                 onPressed: () {
@@ -71,7 +45,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => NewGroupScreen(
-                                participantsList: selected,
+                                participantsList: viewModel.selectedUserNames,
                               )));
                 },
                 icon: const Icon(Icons.add),
@@ -80,9 +54,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
       ),
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => viewModel.onBackPress(context),
             icon: const Icon(Icons.arrow_back)),
         title: const Text("New Chat"),
         bottom: PreferredSize(
@@ -90,7 +62,11 @@ class _NewChatScreenState extends State<NewChatScreen> {
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SearchBar(
-                  controller: controller,
+                  controller: viewModel.searchController,
+                  onChanged: (text) {
+                    // Trigger rebuild to update shownAccounts
+                    (context as Element).markNeedsBuild();
+                  },
                   leading: const SizedBox(
                       width: 40,
                       child: Icon(
@@ -104,17 +80,19 @@ class _NewChatScreenState extends State<NewChatScreen> {
       ),
       body: ListView(
         children: <Widget>[
-          selected.isEmpty ? const SizedBox() : header("Selected"),
+          viewModel.selectedUserNames.isEmpty
+              ? const SizedBox()
+              : _header(context, "Selected"),
           AnimatedSize(
             curve: Easing.emphasizedDecelerate,
             duration: Durations.medium4,
             clipBehavior: Clip.none,
-            child: selected.isEmpty
+            child: viewModel.selectedUserNames.isEmpty
                 ? const SizedBox()
                 : Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: selected
+                    children: viewModel.selectedUserNames
                         .map(
                           (e) => TweenAnimationBuilder<double>(
                               curve: Easing.emphasizedDecelerate,
@@ -128,11 +106,8 @@ class _NewChatScreenState extends State<NewChatScreen> {
                                         Icons.close,
                                         size: 16,
                                       ),
-                                      onDeleted: () {
-                                        setState(() {
-                                          selected.remove(e);
-                                        });
-                                      },
+                                      onDeleted: () =>
+                                          viewModel.removeSelection(e),
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20)),
@@ -147,33 +122,23 @@ class _NewChatScreenState extends State<NewChatScreen> {
                                                       const Icon(Icons.error),
                                               placeholderFadeInDuration:
                                                   const Duration(seconds: 0),
-                                              placeholder: (context, url) => Icon(
-                                                  Icons.account_circle_rounded,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurfaceVariant),
                                               fit: BoxFit.contain,
                                               imageUrl:
                                                   getAccountFromUserName(e)
                                                       .person
-                                                      .pfpPath)),
+                                                      .profilePicturePath)),
                                     ),
                                   )),
                         )
                         .toList(),
                   ),
           ),
-          header(controller.text.isEmpty ? "Suggested" : "Results"),
-          ...shownAccouns.map((e) => ListTile(
+          _header(context,
+              viewModel.searchController.text.isEmpty ? "Suggested" : "Results"),
+          ...viewModel.shownAccounts.map((e) => ListTile(
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                onTap: () {
-                  setState(() {
-                    selected.contains(e.userName)
-                        ? selected.remove(e.userName)
-                        : selected.add(e.userName);
-                  });
-                },
+                onTap: () => viewModel.toggleSelection(e.userName),
                 title: Text(e.name),
                 subtitle: Text(e.userName),
                 leading: CircleAvatar(
@@ -181,13 +146,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                         placeholderFadeInDuration: const Duration(seconds: 0),
-                        placeholder: (context, url) => Icon(
-                            Icons.account_circle_rounded,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant),
                         fit: BoxFit.contain,
-                        imageUrl: e.pfpPath)),
-                trailing: selected.contains(e.userName)
+                        imageUrl: e.profilePicturePath)),
+                trailing: viewModel.selectedUserNames.contains(e.userName)
                     ? const CircleAvatar(
                         radius: 16,
                         child: Icon(
@@ -205,20 +166,14 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 }
 
-class NewGroupScreen extends StatefulWidget {
+class NewGroupScreen extends StatelessWidget {
   const NewGroupScreen({super.key, required this.participantsList});
   final List<String> participantsList;
-  @override
-  State<NewGroupScreen> createState() => _NewGroupScreenState();
-}
-
-class _NewGroupScreenState extends State<NewGroupScreen> {
-  String groupName = "";
 
   @override
   Widget build(BuildContext context) {
     List<Person> participants = [];
-    for (var element in widget.participantsList) {
+    for (var element in participantsList) {
       participants.add(getAccountFromUserName(element).person);
     }
     return Scaffold(
@@ -236,13 +191,8 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    groupName = value;
-                  });
-                },
-                decoration: const InputDecoration(
+              const TextField(
+                decoration: InputDecoration(
                     border: OutlineInputBorder(), labelText: "Group name"),
               ),
               const SizedBox(height: 18),
@@ -284,11 +234,8 @@ class MemberWidget extends StatelessWidget {
                   width: 80,
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                   placeholderFadeInDuration: const Duration(seconds: 0),
-                  placeholder: (context, url) => Icon(
-                      Icons.account_circle_rounded,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   fit: BoxFit.contain,
-                  imageUrl: person.pfpPath)),
+                  imageUrl: person.profilePicturePath)),
           const SizedBox(height: 6),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: size),

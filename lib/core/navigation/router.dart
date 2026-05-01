@@ -1,11 +1,12 @@
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/core/models/story.dart';
 import 'package:redesigned/core/navigation/root_view.dart';
 import 'package:redesigned/core/services/auth_service.dart';
 import 'package:redesigned/core/services/navigation_service.dart';
 import 'package:redesigned/core/services/user_data_service.dart';
 import 'package:redesigned/core/utils/screen_transitions.dart';
+import 'package:redesigned/data/mock_data.dart';
 import 'package:redesigned/data/repositories/profile_repository.dart';
 import 'package:redesigned/screens/auth_screens/sign_in/sign_in_view.dart';
 import 'package:redesigned/screens/auth_screens/sign_in/sign_in_view_model.dart';
@@ -21,6 +22,8 @@ import 'package:redesigned/screens/notifications/notifications_view.dart';
 import 'package:redesigned/screens/notifications/notifications_view_model.dart';
 import 'package:redesigned/screens/profile/profile_view.dart';
 import 'package:redesigned/screens/profile/profile_view_model.dart';
+import 'package:redesigned/screens/reels/reels_view.dart';
+import 'package:redesigned/screens/reels/reels_view_model.dart';
 import 'package:redesigned/screens/settings/settings_view.dart';
 import 'package:redesigned/screens/settings/settings_view_model.dart';
 import 'package:redesigned/screens/stories/stories_view.dart';
@@ -60,6 +63,14 @@ final router = GoRouter(
                     ),
                     state: state)),
             GoRoute(
+                path: '/reels',
+                pageBuilder: (context, state) => SlideBottomTransitionPage(
+                    child: ChangeNotifierProvider<ReelsViewModel>(
+                      create: (_) => ReelsViewModel(),
+                      child: const ReelsView(),
+                    ),
+                    state: state)),
+            GoRoute(
                 path: '/notification',
                 pageBuilder: (context, state) {
                   return SlideBottomTransitionPage(
@@ -87,12 +98,6 @@ final router = GoRouter(
                     ),
                     state: state)),
           ]),
-      // GoRoute(
-      //     path: '/reels',
-      //     pageBuilder: (context, state) {
-      //       return SlideBottomTransitionPage(
-      //           child: const ReelsScreen(), state: state);
-      //     }),
       GoRoute(
         path: '/signin',
         builder: (context, state) => ChangeNotifierProvider<SignInViewModel>(
@@ -110,7 +115,6 @@ final router = GoRouter(
           child: const SignUpView(),
         ),
       ),
-
       GoRoute(
           path: '/stories',
           pageBuilder: ((context, state) => SlideTransitionPage(

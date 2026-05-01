@@ -6,14 +6,14 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 // import 'package:media_kit/media_kit.dart';
 // import 'package:media_kit_video/media_kit_video.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
-import 'package:redesigned/Components/Utils/save_post_sheet.dart';
-import 'package:redesigned/Components/comment_sheet.dart';
-// import 'package:redesigned/Components/comment_sheet.dart';
-import 'package:redesigned/Components/post_viewer.dart';
-import 'package:redesigned/Components/profile_bottomsheet.dart';
-import 'package:redesigned/Components/share_sheet.dart';
+import 'package:redesigned/core/models/account.dart';
+import 'package:redesigned/core/models/post.dart';
+import 'package:redesigned/data/mock_data.dart';
+import 'package:redesigned/widgets/save_post_sheet.dart';
+import 'package:redesigned/widgets/comment_sheet.dart';
+import 'package:redesigned/widgets/post_viewer.dart';
+import 'package:redesigned/widgets/profile_bottomsheet.dart';
+import 'package:redesigned/widgets/share_sheet.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 

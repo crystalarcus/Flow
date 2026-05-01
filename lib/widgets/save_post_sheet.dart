@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/data/mock_data.dart';
 
 class SavePostSheet extends StatefulWidget {
   const SavePostSheet({super.key, required this.controller});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/core/models/models.dart';
 import 'package:redesigned/screens/follow/follow_view_model.dart';
 import 'package:redesigned/screens/follow/widgets/follow_widget.dart';
 
@@ -39,9 +39,10 @@ class FollowView extends StatelessWidget {
                       .map((e) => Follows(
                           isFollowing: e.isFollowing,
                           person: Person(
+                              id: e.id,
                               name: e.name,
                               userName: e.userName,
-                              pfpPath: e.pfpPath)))
+                              profilePicturePath: e.profilePicturePath)))
                       .toList(),
                 ),
                 ListView(
@@ -49,9 +50,10 @@ class FollowView extends StatelessWidget {
                       .map((e) => Follows(
                           isFollowing: e.isFollowing,
                           person: Person(
+                              id: e.id,
                               name: e.name,
                               userName: e.userName,
-                              pfpPath: e.pfpPath)))
+                              profilePicturePath: e.profilePicturePath)))
                       .toList(),
                 ),
                 ListView(
@@ -59,9 +61,10 @@ class FollowView extends StatelessWidget {
                       .map((e) => Follows(
                           isFollowing: e.isFollowing,
                           person: Person(
+                              id: e.id,
                               name: e.name,
                               userName: e.userName,
-                              pfpPath: e.pfpPath)))
+                              profilePicturePath: e.profilePicturePath)))
                       .toList(),
                 )
               ]),

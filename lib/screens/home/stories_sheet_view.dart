@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:redesigned/screens/home/home_view_model.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/core/models/models.dart';
 import 'package:redesigned/screens/stories/widgets/story_tile.dart';
 
 class StoriesSheetView extends StatelessWidget {
@@ -77,7 +77,7 @@ class StoriesSheetView extends StatelessWidget {
                 children: viewModel.storiesData
                     .map((e) => StoryTile(
                         person:
-                            Person(name: e[1], userName: e[0], pfpPath: e[2]),
+                            Person(id: '', name: e[1], userName: e[0], profilePicturePath: e[2]),
                         notifNum: e[3]))
                     .toList(),
               ),

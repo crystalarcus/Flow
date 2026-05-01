@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/Components/Utils/data.dart';
+import 'package:redesigned/core/models/models.dart';
+import 'package:redesigned/data/mock_data.dart';
 import 'package:redesigned/screens/profile/profile_view.dart';
 
 class InterestsScreen extends StatefulWidget {

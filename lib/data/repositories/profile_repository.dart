@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:redesigned/core/constants/filePaths.dart';
+import 'package:redesigned/core/constants/file_paths.dart';
 import 'package:redesigned/core/models/profile.dart';
 
 abstract class IProfileRepository {

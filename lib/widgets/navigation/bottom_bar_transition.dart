@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import './animations.dart';
+import 'package:redesigned/core/utils/animations.dart';
 
 class BottomBarTransition extends StatefulWidget {
   const BottomBarTransition(

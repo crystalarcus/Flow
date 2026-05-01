@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:redesigned/core/models/models.dart';
 import 'package:redesigned/screens/home/home_data.dart';
 
 class HomeViewModel extends ChangeNotifier {
