@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:redesigned/screens/home/home_view_model.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
-import 'package:redesigned/stories_screen.dart';
+import 'package:redesigned/screens/stories/widgets/story_tile.dart';
 
 class StoriesSheetView extends StatelessWidget {
   final HomeViewModel viewModel;

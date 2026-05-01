@@ -550,3 +550,15 @@ List<Reel> reels = [
 
 const String linkToPfp =
     "https://drive.google.com/uc?export=view&id=1LB2B4h_hzLjZUb7AWAS8XNkrVa9JQ1yu";
+
+List<Person> myFollowersConst = [
+  accounts[3].person,
+  accounts[4].person,
+  accounts[5].person,
+  accounts[6].person,
+  accounts[7].person,
+  accounts[12].person,
+  accounts[15].person,
+  accounts[19].person,
+  accounts[24].person,
+];

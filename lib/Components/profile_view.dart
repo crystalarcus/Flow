@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
 
-class ProfileView extends StatelessWidget {
-  const ProfileView({super.key, required this.person, this.size});
+class ProfileAvatarWidget extends StatelessWidget {
+  const ProfileAvatarWidget({super.key, required this.person, this.size});
   final Person person;
   final double? size;
   @override
@@ -36,8 +36,8 @@ class ProfileView extends StatelessWidget {
   }
 }
 
-class ProfileViewTouchable extends StatelessWidget {
-  const ProfileViewTouchable({
+class ProfileAvatarTouchable extends StatelessWidget {
+  const ProfileAvatarTouchable({
     super.key,
     required this.person,
     required this.onTap,
@@ -50,7 +50,7 @@ class ProfileViewTouchable extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ProfileView(
+      child: ProfileAvatarWidget(
         person: person,
         size: size,
       ),

@@ -3,36 +3,37 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:redesigned/Components/Utils/classes.dart';
+import 'package:provider/provider.dart';
+import 'package:redesigned/screens/story_view/story_view_model.dart';
 
 class StoryView extends StatefulWidget {
-  const StoryView({super.key, required this.story});
-  final StoryGroup story;
+  const StoryView({super.key});
+
   @override
   State<StoryView> createState() => _StoryViewState();
 }
 
 class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
   late AnimationController _controller;
-  late int length;
-  int currentIndex = 0;
+
   void createController() {
+    final viewModel = context.read<StoryViewModel>();
     _controller = AnimationController(
-        vsync: this, duration: widget.story.stories[currentIndex].duration)
+        vsync: this, duration: viewModel.currentStory.duration)
       ..addListener(() {
         setState(() {});
       })
       ..addStatusListener((AnimationStatus status) async {
-        if (status == AnimationStatus.completed && currentIndex == length - 1) {
-          await Future.delayed(const Duration(milliseconds: 600), () {
-            context.pop();
+        if (status == AnimationStatus.completed) {
+          viewModel.nextStory(() {
+            if (mounted) context.pop();
           });
-        } else if (status == AnimationStatus.completed &&
-            currentIndex != length - 1) {
-          setState(() {
-            currentIndex++;
-            createController();
-          });
+          if (viewModel.currentIndex != 0 || status == AnimationStatus.completed) {
+            // If moved to next story, reset and restart controller
+            _controller.duration = viewModel.currentStory.duration;
+            _controller.reset();
+            _controller.forward();
+          }
         }
       });
     _controller.forward();
@@ -40,9 +41,10 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    length = widget.story.stories.length;
-    createController();
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      createController();
+    });
   }
 
   @override
@@ -53,14 +55,13 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<StoryViewModel>();
+
     return Scaffold(
         body: SafeArea(
       child: Stack(
         children: [
           GestureDetector(
-              // splashFactory: NoSplash.splashFactory,
-              // highlightColor: Colors.transparent,
-              // hoverColor: Colors.transparent,
               onTapDown: (details) {
                 _controller.stop();
               },
@@ -71,16 +72,14 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                   onPointerUp: (event) {
                     if (event.position.dx >
                         MediaQuery.of(context).size.width / 2) {
-                      if (currentIndex == length - 1) {
+                      viewModel.nextStory(() {
                         context.pop();
-                        return;
-                      }
-                      currentIndex++;
-                    } else if (currentIndex == 0) {
+                      });
                     } else {
-                      currentIndex--;
+                      viewModel.previousStory();
                     }
                     _controller.reset();
+                    _controller.duration = viewModel.currentStory.duration;
                     _controller.forward();
                   },
                   child: Center(
@@ -93,7 +92,7 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                       fit: BoxFit.contain,
-                      imageUrl: widget.story.stories[currentIndex].pathToMedia,
+                      imageUrl: viewModel.currentStory.pathToMedia,
                     ),
                   ))),
           Column(
@@ -120,7 +119,7 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                       fit: BoxFit.contain,
-                      imageUrl: widget.story.person.pfpPath,
+                      imageUrl: viewModel.person.pfpPath,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -130,12 +129,11 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        widget.story.person.name,
-                        // currentIndex.toString(),
+                        viewModel.person.name,
                         style: const TextStyle(fontSize: 18),
                       ),
                       Text(
-                        "${widget.story.stories[0].uploadTime} ago",
+                        "${viewModel.currentStory.uploadTime} ago",
                         style: const TextStyle(fontSize: 12),
                       ),
                     ],
@@ -149,18 +147,18 @@ class _StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                 height: 6,
               ),
               Row(
-                  children: widget.story.stories
+                  children: viewModel.storyGroup.stories
                       .mapIndexed((index, element) => Expanded(
                               child: Row(
                             children: [
                               Expanded(
                                   child: LinearProgressIndicator(
-                                      value: currentIndex > index
+                                      value: viewModel.currentIndex > index
                                           ? 1
-                                          : currentIndex < index
+                                          : viewModel.currentIndex < index
                                               ? 0
                                               : _controller.value)),
-                              SizedBox(width: index == length - 1 ? 0 : 4)
+                              SizedBox(width: index == viewModel.length - 1 ? 0 : 4)
                             ],
                           )))
                       .toList())

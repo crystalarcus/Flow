@@ -1,71 +1,34 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
 import 'package:redesigned/Components/Utils/data.dart';
 import 'package:redesigned/Components/Utils/open_container.dart';
 import 'package:redesigned/chat_screen.dart';
+import 'package:redesigned/screens/messages/messages_view_model.dart';
 import 'package:redesigned/search_message_screen.dart';
 
-class MessageScreen extends StatelessWidget {
-  const MessageScreen({super.key});
+class MessagesView extends StatelessWidget {
+  const MessagesView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-        builder: ((context, constraints) => constraints.maxWidth > 840
-            ? const MessageScreenDesktop()
-            : const MessageScreenMobile()));
+      builder: (context, constraints) => constraints.maxWidth > 840
+          ? const MessageScreenDesktop()
+          : const MessageScreenMobile(),
+    );
   }
 }
 
-class MessageScreenMobile extends StatefulWidget {
+class MessageScreenMobile extends StatelessWidget {
   const MessageScreenMobile({super.key});
 
   @override
-  State<MessageScreenMobile> createState() => _MessageScreenMobileState();
-}
-
-class MessageSearchAnchor extends StatefulWidget {
-  const MessageSearchAnchor({super.key});
-
-  @override
-  State<MessageSearchAnchor> createState() => _MessageSearchAnchorState();
-}
-
-class _MessageSearchAnchorState extends State<MessageSearchAnchor> {
-  @override
   Widget build(BuildContext context) {
-    return OpenContainer(
-        transitionType: ContainerTransitionType.fadeThrough,
-        middleColor: Theme.of(context).colorScheme.surface,
-        closedShape: const CircleBorder(),
-        closedColor: Colors.transparent,
-        openElevation: 0,
-        closedElevation: 0,
-        closedBuilder: (context, openContainer) => SizedBox(
-              height: 45,
-              width: 45,
-              child: IconButton(
-                  onPressed: () {
-                    openContainer();
-                  },
-                  icon: const Icon(
-                    Icons.search,
-                    weight: 600,
-                  )),
-            ),
-        openBuilder: (context, controller) => const SearchMessageScreen());
-  }
-}
+    final viewModel = context.watch<MessagesViewModel>();
 
-class _MessageScreenMobileState extends State<MessageScreenMobile> {
-  Set<String> currentFilters = {};
-  List<Chat> chatData = chats;
-  List<String> newChatSelected = [];
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 64,
@@ -81,15 +44,17 @@ class _MessageScreenMobileState extends State<MessageScreenMobile> {
             child: Container(
               color: Colors.black,
               child: CachedNetworkImage(
-                  height: 40,
-                  width: 40,
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  placeholderFadeInDuration: const Duration(seconds: 0),
-                  placeholder: (context, url) => Icon(
-                      Icons.account_circle_rounded,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  fit: BoxFit.contain,
-                  imageUrl: linkToPfp),
+                height: 40,
+                width: 40,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                placeholderFadeInDuration: const Duration(seconds: 0),
+                placeholder: (context, url) => Icon(
+                  Icons.account_circle_rounded,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                fit: BoxFit.contain,
+                imageUrl: linkToPfp,
+              ),
             ),
           ),
           const SizedBox(width: 16)
@@ -98,28 +63,6 @@ class _MessageScreenMobileState extends State<MessageScreenMobile> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: ListView(
         children: [
-          // Subheader Notes
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          //   child: Text(
-          //     "Notes",
-          //     style: TextStyle(
-          //         fontWeight: FontWeight.w500,
-          //         color: Theme.of(context).colorScheme.onSurfaceVariant),
-          //   ),
-          // ),
-
-          // NotesList
-          // SizedBox(
-          //     height: 140,
-          //     child: ListView(
-          //         scrollDirection: Axis.horizontal,
-          //         children: notes
-          //             .map((e) => NoteWidget(
-          //                   note: e,
-          //                 ))
-          //             .toList())),
-
           SizedBox(
             height: 60,
             child: ListView(
@@ -137,57 +80,37 @@ class _MessageScreenMobileState extends State<MessageScreenMobile> {
                         label: Text(e),
                         labelPadding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 2),
-                        selected: currentFilters.contains(e),
+                        selected: viewModel.currentFilters.contains(e),
                         onSelected: (bool isSelected) {
-                          setState(() {
-                            isSelected
-                                ? currentFilters.add(e)
-                                : currentFilters.remove(e);
-                            currentFilters.isEmpty
-                                ? chatData = chats
-                                : chatData = chats.where((element) {
-                                    if (element.newMessage > 0 &&
-                                        currentFilters.contains('Unread')) {
-                                      return true;
-                                    } else if (element.newMessage == 0 &&
-                                        currentFilters.contains('Read')) {
-                                      return true;
-                                    } else if (element.isActive &&
-                                        currentFilters.contains('Active')) {
-                                      return true;
-                                    } else {
-                                      return false;
-                                    }
-                                  }).toList();
-                          });
+                          viewModel.toggleFilter(e, isSelected);
                         },
                       ),
                     ))
               ],
             ),
           ),
-
-          ...chatData.map((e) => OpenContainer(
-              useRootNavigator: true,
-              tappable: false,
-              transitionType: ContainerTransitionType.fade,
-              transitionDuration: Durations.medium3,
-              reverseTransitionDuration: Durations.short4,
-              middleColor: Theme.of(context).colorScheme.surface,
-              closedColor: Theme.of(context).colorScheme.surface,
-              openColor: Theme.of(context).colorScheme.surface,
-              openElevation: 0,
-              closedElevation: 0,
-              clipBehavior: Clip.none,
-              closedBuilder: (context, close) => ChatWidget(
-                    chat: e,
-                    openChat: () {
-                      close();
-                    },
-                  ),
-              openBuilder: (context, _) => MobileChatScreen(
-                    person: e.person,
-                  ))),
+          ...viewModel.chatData.map((e) => OpenContainer(
+                useRootNavigator: true,
+                tappable: false,
+                transitionType: ContainerTransitionType.fade,
+                transitionDuration: Durations.medium3,
+                reverseTransitionDuration: Durations.short4,
+                middleColor: Theme.of(context).colorScheme.surface,
+                closedColor: Theme.of(context).colorScheme.surface,
+                openColor: Theme.of(context).colorScheme.surface,
+                openElevation: 0,
+                closedElevation: 0,
+                clipBehavior: Clip.none,
+                closedBuilder: (context, close) => ChatWidget(
+                  chat: e,
+                  openChat: () {
+                    close();
+                  },
+                ),
+                openBuilder: (context, _) => MobileChatScreen(
+                  person: e.person,
+                ),
+              )),
           const SizedBox(height: 120)
         ],
       ),
@@ -195,19 +118,13 @@ class _MessageScreenMobileState extends State<MessageScreenMobile> {
   }
 }
 
-class MessageScreenDesktop extends StatefulWidget {
+class MessageScreenDesktop extends StatelessWidget {
   const MessageScreenDesktop({super.key});
 
   @override
-  State<MessageScreenDesktop> createState() => _MessageScreenDesktopState();
-}
-
-class _MessageScreenDesktopState extends State<MessageScreenDesktop> {
-  List<String> currentFilters = [];
-  List chatData = [];
-  Person? currectActive;
-  @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<MessagesViewModel>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       body: Padding(
@@ -277,7 +194,7 @@ class _MessageScreenDesktopState extends State<MessageScreenDesktop> {
                                   const EdgeInsets.symmetric(horizontal: 4),
                               child: FilterChip(
                                 side: BorderSide(
-                                    color: currentFilters.contains(e)
+                                    color: viewModel.currentFilters.contains(e)
                                         ? Theme.of(context)
                                             .colorScheme
                                             .primaryContainer
@@ -289,33 +206,9 @@ class _MessageScreenDesktopState extends State<MessageScreenDesktop> {
                                 label: Text(e),
                                 labelPadding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 2),
-                                selected: currentFilters.contains(e),
+                                selected: viewModel.currentFilters.contains(e),
                                 onSelected: (bool isSelected) {
-                                  setState(() {
-                                    isSelected
-                                        ? currentFilters.add(e)
-                                        : currentFilters.remove(e);
-                                    currentFilters.isEmpty
-                                        ? chatData = chats
-                                        : chatData = chats.where((element) {
-                                            if (element.newMessage > 0 &&
-                                                currentFilters
-                                                    .contains('Unread')) {
-                                              return true;
-                                            } else if (element.newMessage ==
-                                                    0 &&
-                                                currentFilters
-                                                    .contains('Read')) {
-                                              return true;
-                                            } else if (element.isActive &&
-                                                currentFilters
-                                                    .contains('Active')) {
-                                              return true;
-                                            } else {
-                                              return false;
-                                            }
-                                          }).toList();
-                                  });
+                                  viewModel.toggleFilter(e, isSelected);
                                 },
                               ),
                             ))
@@ -328,9 +221,7 @@ class _MessageScreenDesktopState extends State<MessageScreenDesktop> {
                         .map((e) => ChatWidgetDesktop(
                             chat: e,
                             onPressed: () {
-                              setState(() {
-                                currectActive = e.person;
-                              });
+                              viewModel.selectActiveChat(e.person);
                             }))
                         .toList(),
                   ))
@@ -341,8 +232,8 @@ class _MessageScreenDesktopState extends State<MessageScreenDesktop> {
             Expanded(
                 child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: currectActive != null
-                  ? DesktopChatScreen(person: currectActive!)
+              child: viewModel.currentActive != null
+                  ? DesktopChatScreen(person: viewModel.currentActive!)
                   : Container(
                       decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface),
@@ -364,16 +255,14 @@ class ChatWidgetDesktop extends StatelessWidget {
   const ChatWidgetDesktop(
       {super.key, required this.chat, required this.onPressed});
   final Chat chat;
-  final Function onPressed;
+  final VoidCallback onPressed;
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
-        onTap: () {
-          onPressed();
-        },
+        onTap: onPressed,
         title: Text(
           chat.person.name,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -413,7 +302,6 @@ class ChatWidgetDesktop extends StatelessWidget {
                   color: Theme.of(context).colorScheme.secondary,
                   fontWeight: FontWeight.w600),
             ),
-            // IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
           ],
         ),
       ),
@@ -425,10 +313,10 @@ Set<String> filters = {'Unread', 'Read', 'Groups', 'Active', 'Starred'};
 
 class ChatWidget extends StatelessWidget {
   const ChatWidget({super.key, required this.chat, required this.openChat});
-  final Function openChat;
+  final VoidCallback openChat;
   final Chat chat;
 
-  Widget chatBottomSheet() => ListView(
+  Widget _chatBottomSheet(BuildContext context) => ListView(
         physics: const ClampingScrollPhysics(),
         shrinkWrap: true,
         children: [
@@ -447,11 +335,6 @@ class ChatWidget extends StatelessWidget {
             leading: const Icon(Icons.message_outlined),
             title: const Text("Mute Messages"),
           ),
-          // ListTile(
-          //   onTap: () {},
-          //   leading: const Icon(Icons.phone_outlined),
-          //   title: const Text("Mute Calls"),
-          // ),
           ListTile(
             onTap: () {},
             leading: const Icon(Symbols.delete_outline),
@@ -459,12 +342,11 @@ class ChatWidget extends StatelessWidget {
           ),
         ],
       );
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        openChat();
-      },
+      onTap: openChat,
       child: Padding(
           padding: const EdgeInsets.only(left: 8, top: 4, bottom: 4),
           child: Row(
@@ -491,7 +373,6 @@ class ChatWidget extends StatelessWidget {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name
                   Text(
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -501,9 +382,7 @@ class ChatWidget extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0),
                   ),
-
                   const SizedBox(height: 4),
-                  // Message
                   Text(
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -544,7 +423,7 @@ class ChatWidget extends StatelessWidget {
                           isDismissible: true,
                           enableDrag: true,
                           context: context,
-                          builder: (context) => chatBottomSheet());
+                          builder: (context) => _chatBottomSheet(context));
                     },
                     icon: const Icon(Icons.more_vert),
                   )
@@ -556,70 +435,28 @@ class ChatWidget extends StatelessWidget {
   }
 }
 
-class NoteWidget extends StatelessWidget {
-  const NoteWidget({super.key, required this.note});
-  final Note note;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Column(children: [
-            const SizedBox(
-              height: 40,
-            ),
-            PfpView(p: note.person, size: 55)
-          ]),
-          Container(
-            constraints: const BoxConstraints(maxWidth: 120),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12)),
-            child: Text(
-              note.note,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+class MessageSearchAnchor extends StatelessWidget {
+  const MessageSearchAnchor({super.key});
 
-class PfpView extends StatelessWidget {
-  const PfpView({super.key, required this.p, required this.size});
-  final Person p;
-  final double size;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: CachedNetworkImage(
-                height: 75,
-                width: 75,
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-                placeholderFadeInDuration: const Duration(seconds: 0),
-                placeholder: (context, url) => Icon(
-                    Icons.account_circle_rounded,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                fit: BoxFit.contain,
-                imageUrl: p.pfpPath)),
-        Container(
-            alignment: Alignment.center,
-            width: size + 40,
-            child: Text(
-              p.userName,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12),
-            ))
-      ],
-    );
+    return OpenContainer(
+        transitionType: ContainerTransitionType.fadeThrough,
+        middleColor: Theme.of(context).colorScheme.surface,
+        closedShape: const CircleBorder(),
+        closedColor: Colors.transparent,
+        openElevation: 0,
+        closedElevation: 0,
+        closedBuilder: (context, openContainer) => SizedBox(
+              height: 45,
+              width: 45,
+              child: IconButton(
+                  onPressed: openContainer,
+                  icon: const Icon(
+                    Icons.search,
+                    weight: 600,
+                  )),
+            ),
+        openBuilder: (context, controller) => const SearchMessageScreen());
   }
 }

@@ -6,7 +6,7 @@ import 'package:redesigned/screens/home/home_view_model.dart';
 import 'package:redesigned/Components/Utils/classes.dart';
 import 'package:redesigned/Components/Utils/open_container.dart';
 import 'package:redesigned/Components/posts.dart';
-import 'package:redesigned/main.dart';
+import 'package:redesigned/core/services/app_service.dart';
 import 'package:redesigned/search_insta_screen.dart';
 
 class MobileHomeView extends StatelessWidget {
@@ -26,7 +26,7 @@ class MobileHomeView extends StatelessWidget {
             SliverAppBar(
               toolbarHeight: 63,
               forceMaterialTransparency: true,
-              floating: MainApp.of(context).isSearchFloating,
+              floating: context.watch<AppService>().isSearchFloating,
               title: Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: SizedBox(

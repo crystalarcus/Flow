@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:redesigned/main.dart';
+import 'package:redesigned/core/services/app_service.dart';
+import 'package:provider/provider.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
@@ -9,13 +10,12 @@ class PreferencesScreen extends StatefulWidget {
 }
 
 class _PreferencesScreenState extends State<PreferencesScreen> {
-  ThemeMode _themeMode = ThemeMode.system;
   bool hideLikeAndShare = false;
 
   @override
   Widget build(BuildContext context) {
-    bool isSearchFloating = MainApp.of(context).isSearchFloating;
-    _themeMode = MainApp.of(context).themeMode;
+    final appService = context.watch<AppService>();
+    final themeMode = appService.themeMode;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,13 +24,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       body: ListView(
         children: [
           ListTile(
-            leading: Icon(MainApp.of(context).isDark()
+            leading: Icon(appService.isDark(context)
                 ? Icons.dark_mode_outlined
                 : Icons.light_mode_outlined),
             title: const Text("Theme"),
-            subtitle: Text(_themeMode == ThemeMode.dark
+            subtitle: Text(themeMode == ThemeMode.dark
                 ? "Dark"
-                : _themeMode == ThemeMode.light
+                : themeMode == ThemeMode.light
                     ? "Light"
                     : "System"),
             onTap: () {
@@ -54,57 +54,37 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       children: [
                         RadioListTile(
                             value: ThemeMode.system,
-                            groupValue: _themeMode,
+                            groupValue: themeMode,
                             title: const Text(
                               "System",
                               style: TextStyle(fontSize: 18),
                             ),
                             onChanged: (t) {
-                              setState(() {
-                                MainApp.of(context)
-                                    .changeTheme(ThemeMode.system);
-                                _themeMode = ThemeMode.system;
-                              });
+                              appService.changeTheme(ThemeMode.system);
+                              Navigator.pop(context);
                             }),
                         RadioListTile(
                             value: ThemeMode.light,
-                            groupValue: _themeMode,
+                            groupValue: themeMode,
                             title: const Text(
                               "Light",
                               style: TextStyle(fontSize: 18),
                             ),
                             onChanged: (t) {
-                              setState(() {
-                                MainApp.of(context)
-                                    .changeTheme(ThemeMode.light);
-                                _themeMode = ThemeMode.light;
-                              });
+                              appService.changeTheme(ThemeMode.light);
+                              Navigator.pop(context);
                             }),
                         RadioListTile(
                             value: ThemeMode.dark,
-                            groupValue: _themeMode,
+                            groupValue: themeMode,
                             title: const Text(
                               "Dark",
                               style: TextStyle(fontSize: 18),
                             ),
                             onChanged: (t) {
-                              setState(() {
-                                MainApp.of(context).changeTheme(ThemeMode.dark);
-                                _themeMode = ThemeMode.dark;
-                              });
+                              appService.changeTheme(ThemeMode.dark);
+                              Navigator.pop(context);
                             }),
-                        Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("Done"))
-                              ],
-                            ))
                       ],
                     );
                   });
@@ -133,12 +113,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               subtitle:
                   const Text("Make search bar reappears when you scroll up"),
               secondary: const Icon(Icons.search),
-              value: isSearchFloating,
+              value: appService.isSearchFloating,
               onChanged: (bool value) {
-                setState(() {
-                  isSearchFloating = value;
-                  MainApp.of(context).isSearchFloating = value;
-                });
+                appService.toggleSearchFloating();
               })
         ],
       ),

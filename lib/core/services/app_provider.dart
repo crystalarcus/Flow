@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:redesigned/core/services/app_service.dart';
 import 'package:redesigned/core/services/auth_service.dart';
 import 'package:redesigned/core/services/navigation_service.dart';
 import 'package:redesigned/core/services/user_data_service.dart';
@@ -17,6 +18,9 @@ class AppProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<AppService>(
+          create: (_) => AppService(),
+        ),
         ChangeNotifierProvider<AuthService>(
           create: (_) => AuthService(),
         ),

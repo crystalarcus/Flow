@@ -8,6 +8,8 @@ import 'package:redesigned/Components/Utils/open_container.dart'
 import 'package:redesigned/Components/disappearing_bottom_navigation_bar.dart';
 import 'package:redesigned/Components/disappearing_navigation_rail.dart';
 import 'package:redesigned/new_chat_screen.dart';
+import 'package:redesigned/core/services/app_service.dart';
+import 'package:provider/provider.dart';
 
 class RootView extends StatefulWidget {
   final Widget child;
@@ -34,14 +36,12 @@ class _RootViewState extends State<RootView>
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.transparent,
-      // systemNavigationBarIconBrightness: MainApp.of(context).themeMode ==
-      //             ThemeMode.dark ||
-      //         (MainApp.of(context).themeMode == ThemeMode.dark &&
-      //             MediaQuery.platformBrightnessOf(context) == Brightness.dark)
-      //     ? Brightness.light
-      //     : Brightness.dark,
+      systemNavigationBarIconBrightness:
+          context.read<AppService>().isDark(context)
+              ? Brightness.light
+              : Brightness.dark,
       statusBarColor: Colors.transparent,
       systemNavigationBarContrastEnforced: false,
       systemStatusBarContrastEnforced: false,
@@ -223,7 +223,7 @@ class _RootViewState extends State<RootView>
           if (currentIndex != index) {
             switch (index) {
               case 0:
-                context.go('/');
+                context.go('/home');
                 break;
               case 1:
                 context.go('/stories');
@@ -254,7 +254,7 @@ class _RootViewState extends State<RootView>
                 selectedIndex = index;
                 switch (index) {
                   case 0:
-                    context.push('/');
+                    context.go('/home');
                     break;
                   case 1:
                     context.go('/reels');

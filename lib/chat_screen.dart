@@ -734,8 +734,7 @@ const chatTextStyle = TextStyle(
 //                                     },
 //                                     child: Container(
 //                                         decoration: BoxDecoration(
-//                                           color: MainApp.of(context)
-//                                               .getsurfaceContainer,
+//                                           color: context.read<AppService>().seedColor,
 //                                           borderRadius:
 //                                               BorderRadius.circular(30),
 //                                         ),

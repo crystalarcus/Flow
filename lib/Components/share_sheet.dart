@@ -116,7 +116,7 @@ class _ShareSheetState extends State<ShareSheet> {
               crossAxisCount: 3,
               shrinkWrap: true,
               children: recentlySent
-                  .map((e) => ProfileView(
+                  .map((e) => ProfileAvatarWidget(
                         person: getPersonFromUserName(e),
                         size: 74,
                       ))

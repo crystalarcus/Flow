@@ -97,7 +97,7 @@ class _SearchInstaScreenState extends State<SearchInstaScreen> {
                 children: searchAccounts
                     .map((element) => Padding(
                           padding: const EdgeInsets.all(12),
-                          child: ProfileViewTouchable(
+                          child: ProfileAvatarTouchable(
                             person: element.person,
                             onTap: () {},
                           ),

@@ -7,20 +7,26 @@ import 'package:redesigned/core/services/navigation_service.dart';
 import 'package:redesigned/core/services/user_data_service.dart';
 import 'package:redesigned/core/utils/screen_transitions.dart';
 import 'package:redesigned/data/repositories/profile_repository.dart';
-import 'package:redesigned/follow_screen.dart';
-import 'package:redesigned/notification_screen.dart';
 import 'package:redesigned/screens/auth_screens/sign_in/sign_in_view.dart';
 import 'package:redesigned/screens/auth_screens/sign_in/sign_in_view_model.dart';
 import 'package:redesigned/screens/auth_screens/sign_up/sign_up_view.dart';
 import 'package:redesigned/screens/auth_screens/sign_up/sign_up_view_model.dart';
+import 'package:redesigned/screens/follow/follow_view.dart';
+import 'package:redesigned/screens/follow/follow_view_model.dart';
 import 'package:redesigned/screens/home/home_view.dart';
 import 'package:redesigned/screens/home/home_view_model.dart';
+import 'package:redesigned/screens/messages/messages_view.dart';
+import 'package:redesigned/screens/messages/messages_view_model.dart';
+import 'package:redesigned/screens/notifications/notifications_view.dart';
+import 'package:redesigned/screens/notifications/notifications_view_model.dart';
 import 'package:redesigned/screens/profile/profile_view.dart';
-import 'package:redesigned/message_screen.dart';
 import 'package:redesigned/screens/profile/profile_view_model.dart';
-import 'package:redesigned/settings_screen.dart';
-import 'package:redesigned/stories_screen.dart';
-import 'package:redesigned/story_view_screen.dart';
+import 'package:redesigned/screens/settings/settings_view.dart';
+import 'package:redesigned/screens/settings/settings_view_model.dart';
+import 'package:redesigned/screens/stories/stories_view.dart';
+import 'package:redesigned/screens/stories/stories_view_model.dart';
+import 'package:redesigned/screens/story_view/story_view.dart';
+import 'package:redesigned/screens/story_view/story_view_model.dart';
 
 final router = GoRouter(
     initialLocation: '/home',
@@ -57,16 +63,29 @@ final router = GoRouter(
                 path: '/notification',
                 pageBuilder: (context, state) {
                   return SlideBottomTransitionPage(
-                      child: const NotificationScreen(), state: state);
+                      child: ChangeNotifierProvider<NotificationsViewModel>(
+                        create: (_) => NotificationsViewModel(),
+                        child: const NotificationsView(),
+                      ),
+                      state: state);
                 }),
             GoRoute(
                 path: '/messages',
                 pageBuilder: (context, state) => SlideBottomTransitionPage(
-                    child: const MessageScreen(), state: state)),
+                    child: ChangeNotifierProvider<MessagesViewModel>(
+                      create: (_) => MessagesViewModel(),
+                      child: const MessagesView(),
+                    ),
+                    state: state)),
             GoRoute(
                 path: '/settings',
                 pageBuilder: (context, state) => SlideBottomTransitionPage(
-                    child: const SettingsScreen(), state: state)),
+                    child: ChangeNotifierProvider<SettingsViewModel>(
+                      create: (_) =>
+                          SettingsViewModel(context.read<AuthService>()),
+                      child: const SettingsView(),
+                    ),
+                    state: state)),
           ]),
       // GoRoute(
       //     path: '/reels',
@@ -94,8 +113,13 @@ final router = GoRouter(
 
       GoRoute(
           path: '/stories',
-          pageBuilder: ((context, state) =>
-              SlideTransitionPage(state: state, child: const StoriesScreen()))),
+          pageBuilder: ((context, state) => SlideTransitionPage(
+                state: state,
+                child: ChangeNotifierProvider<StoriesViewModel>(
+                  create: (_) => StoriesViewModel(),
+                  child: const StoriesView(),
+                ),
+              ))),
       GoRoute(
         path: '/profile/:userID',
         pageBuilder: ((context, state) => SlideTransitionPage(
@@ -110,19 +134,27 @@ final router = GoRouter(
       GoRoute(
           path: '/follow/:name',
           pageBuilder: ((context, state) {
-            // var extra = state.extra as List;
-            // Person person = extra[0] as Person;
-            // List<FollowPerson> followers = extra[1] as List<FollowPerson>? ?? [];
             String name = state.pathParameters['name'] ?? '';
             return SlideTransitionPage(
-                state: state, child: FollowScreen(name: name));
+                state: state,
+                child: ChangeNotifierProvider<FollowViewModel>(
+                  create: (_) => FollowViewModel(
+                      name: name,
+                      followers: followersList,
+                      following: followersList,
+                      context: context),
+                  child: const FollowView(),
+                ));
           })),
       GoRoute(
           path: '/storyview',
           pageBuilder: ((context, state) {
             var storyGroup = state.extra as StoryGroup;
-            // String name = state.pathParameters['name'] ?? '';
             return SlideTransitionPage(
-                state: state, child: StoryView(story: storyGroup));
+                state: state,
+                child: ChangeNotifierProvider<StoryViewModel>(
+                  create: (_) => StoryViewModel(storyGroup),
+                  child: const StoryView(),
+                ));
           })),
     ]);
