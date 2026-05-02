@@ -12,7 +12,7 @@ class AppService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Color _seedColor = const Color.fromARGB(255, 111, 82, 138);
+  final Color _seedColor = const Color.fromARGB(255, 138, 82, 118);
   Color get seedColor => _seedColor;
 
   bool isDark(BuildContext context) {
