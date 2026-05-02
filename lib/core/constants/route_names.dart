@@ -3,7 +3,7 @@
 /// This class provides route name constants for GoRouter for navigation
 class RouteNames {
   static const String SIGN_IN_SCREEN = "/sign_in";
-  static const String SIGN_UP_SCREEN = "/sign_up";
+  static const String SIGN_UP_SCREEN = "sign_up";
   static const String FORGET_PASSWORD_SCREEN = "/forget_password";
   static const String HOME_SCREEN = "home";
   static const String NOTIFICATION_SCREEN = "/notification";

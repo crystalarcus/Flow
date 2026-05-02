@@ -62,6 +62,6 @@ class SignInViewModel extends ChangeNotifier {
 
   // Navigate to Sign up page
   void onSignUpPress() {
-    _navService.go(RouteNames.SIGN_UP_SCREEN);
+    _navService.push(RouteNames.SIGN_UP_SCREEN);
   }
 }

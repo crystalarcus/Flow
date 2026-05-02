@@ -680,6 +680,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.7296"
+  material_shapes:
+    dependency: "direct main"
+    description:
+      name: material_shapes
+      sha256: "20f20eb56ef4cd9c957f91f7cf4986aad910a65ed1f9a3bc33b13a19cc3fd885"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   material_symbols_icons:
     dependency: "direct main"
     description:
