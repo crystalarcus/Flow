@@ -49,8 +49,8 @@ class MobileHomeView extends StatelessWidget {
                             action();
                           },
                           child: Padding(
-                            padding: EdgeInsetsGeometry.symmetric(
-                                horizontal: 20, vertical: 12),
+                            padding:
+                                EdgeInsetsGeometry.only(left: 18, right: 12),
                             child: Row(
                               children: [
                                 Row(
@@ -84,7 +84,7 @@ class MobileHomeView extends StatelessWidget {
                                           .colorScheme
                                           .onSurfaceVariant,
                                     ),
-                                    fit: BoxFit.contain,
+                                    fit: BoxFit.cover,
                                     imageUrl: viewModel.profilePictureLink,
                                   ),
                                 )

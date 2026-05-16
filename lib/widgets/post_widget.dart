@@ -445,8 +445,8 @@ class _MobilePostState extends State<MobilePost> {
                             PageRouteBuilder(
                               opaque: false,
                               barrierDismissible: true,
-                              transitionDuration: Durations.long4,
-                              reverseTransitionDuration: Durations.medium3,
+                              transitionDuration: Durations.extralong1,
+                              reverseTransitionDuration: Durations.short4,
                               pageBuilder:
                                   (context, animation, secondaryAnimation) {
                                 return ProfilePictureViewer(
@@ -809,10 +809,10 @@ class _CarouselPostWidgetState extends State<CarouselPostWidget> {
       tag: widget.imagePost.postId.toString(),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-            // maxWidth: (widget.imagePost.aspectRatio *
-            //     (MediaQuery.of(context).size.width - 80)),
+            maxWidth: (widget.imagePost.aspectRatio *
+                (MediaQuery.of(context).size.width)),
             maxHeight: (1 / widget.imagePost.aspectRatio) *
-                (MediaQuery.of(context).size.width - 80)),
+                (MediaQuery.of(context).size.width)),
         child: CarouselView(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadiusGeometry.circular(24)),
@@ -830,17 +830,11 @@ class _CarouselPostWidgetState extends State<CarouselPostWidget> {
           },
           itemSnapping: true,
           itemExtent: widget.imagePost.aspectRatio *
-              (MediaQuery.of(context).size.width - 40),
-          shrinkExtent: (1 / widget.imagePost.aspectRatio) *
-              (MediaQuery.of(context).size.width - 40),
+              (MediaQuery.of(context).size.width),
+          shrinkExtent: 120,
           children: widget.imagePost.imagePaths
               .map((e) => Builder(
                     builder: (BuildContext context) => CachedNetworkImage(
-                        height: 1 /
-                            widget.imagePost.aspectRatio *
-                            (MediaQuery.of(context).size.width - 40),
-                        width: widget.imagePost.aspectRatio *
-                            (MediaQuery.of(context).size.width - 40),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.error),
                         placeholderFadeInDuration: const Duration(seconds: 0),
