@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
 // import 'package:media_kit/media_kit.dart';
 // import 'package:media_kit_video/media_kit_video.dart';
 import 'package:redesigned/core/models/post.dart';
 import 'package:redesigned/core/utils/format_post_timestamp.dart';
 import 'package:redesigned/widgets/post_viewer.dart';
 import 'package:redesigned/widgets/profile_picture_viewer.dart';
+import 'package:redesigned/widgets/profile_picture_viewer_model.dart';
 import 'package:redesigned/widgets/utils/m3expressive/expressive_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -445,16 +447,19 @@ class _MobilePostState extends State<MobilePost> {
                             PageRouteBuilder(
                               opaque: false,
                               barrierDismissible: true,
-                              transitionDuration: Durations.extralong1,
+                              transitionDuration: Durations.long3,
                               reverseTransitionDuration: Durations.short4,
                               pageBuilder:
                                   (context, animation, secondaryAnimation) {
-                                return ProfilePictureViewer(
-                                  post: widget.post,
-                                  animation: CurvedAnimation(
-                                    parent: animation,
-                                    curve: Easing.emphasizedDecelerate,
-                                    reverseCurve: Easing.emphasizedAccelerate,
+                                return ChangeNotifierProvider(
+                                  create: (_) => ProfilePictureViewerModel(),
+                                  child: ProfilePictureViewer(
+                                    post: widget.post,
+                                    animation: CurvedAnimation(
+                                      parent: animation,
+                                      curve: Easing.emphasizedDecelerate,
+                                      reverseCurve: Easing.emphasizedAccelerate,
+                                    ),
                                   ),
                                 );
                               },

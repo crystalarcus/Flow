@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_shapes/material_shapes.dart';
+import 'package:provider/provider.dart';
 import 'package:redesigned/core/models/post.dart';
+import 'package:redesigned/widgets/profile_picture_viewer_model.dart';
 
 class ExpressiveRectTween extends MaterialRectArcTween {
   ExpressiveRectTween({super.begin, super.end});
@@ -27,88 +29,191 @@ class ProfilePictureViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final model = context.watch<ProfilePictureViewerModel>();
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final baseOpacity = animation.value * 0.4;
+    final bgColor = Color.lerp(
+      Colors.black.withValues(alpha: baseOpacity),
+      colorScheme.surface.withValues(alpha: animation.value),
+      model.expansionProgress,
+    );
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
+      onTap: () {
+        if (model.expansionProgress == 0) {
+          Navigator.of(context).pop();
+        }
+      },
       child: AnimatedBuilder(
         animation: animation,
         builder: (context, child) {
-          final blurValue = animation.value * 15.0;
+          final blurValue =
+              (1.0 - model.expansionProgress) * animation.value * 15.0;
 
           return BackdropFilter(
             filter: ImageFilter.blur(sigmaX: blurValue, sigmaY: blurValue),
             child: Container(
-              color: Colors.black.withValues(alpha: animation.value * 0.4),
+              color: bgColor,
               child: child,
             ),
           );
         },
-        child: Hero(
-          tag: 'pfp_${post.postId}',
-          createRectTween: (begin, end) =>
-              ExpressiveRectTween(begin: begin, end: end),
-          child: Material(
-            color: Colors.transparent,
-            child: SizedBox(
-              width: size.width,
-              height: size.height,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(48.0),
-                      child:
-                          //  ClipRRect(
-                          // borderRadius: BorderRadius.circular(200),
-                          // child:
-                          MaterialShapes.pentagon(
-                              color: Colors.transparent,
-                              size: size.width - 120,
-                              imageFit: BoxFit.cover,
-                              image: CachedNetworkImageProvider(
-                                post.person.pfpPath,
-                                // errorWidget: (context, url, error) =>
-                                // const Icon(Icons.error, size: 100),
-                              )),
+        child: Stack(
+          children: [
+            NotificationListener<ScrollEndNotification>(
+              onNotification: (notification) {
+                model.handleScrollEnd();
+                return true;
+              },
+              child: CustomScrollView(
+                controller: model.scrollController,
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // Top Spacer to initialy center the image
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: size.height * 0.15,
                     ),
-                    // ),
                   ),
-                  // Metadata Bubbles inside the Hero so they stay on top
-                  _buildMetadata(context, animation),
+                  SliverToBoxAdapter(
+                    child: Hero(
+                      tag: 'pfp_${post.postId}',
+                      createRectTween: (begin, end) =>
+                          ExpressiveRectTween(begin: begin, end: end),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: SizedBox(
+                          width: size.width,
+                          height: size.height * 0.6,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(48.0),
+                                child: MaterialShapes.pentagon(
+                                    color: Colors.transparent,
+                                    size: size.width - 120,
+                                    imageFit: BoxFit.cover,
+                                    image: CachedNetworkImageProvider(
+                                      post.person.pfpPath,
+                                    )),
+                              ),
+                              _buildMetadata(context, animation, model),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Placeholder for Profile Content (Phase 2)
+                  SliverToBoxAdapter(
+                    child: Opacity(
+                      opacity: model.expansionProgress,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 32),
+                        child: Column(
+                          children: [
+                            const Divider(),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _buildStatColumn(context, "1.2K", "Followers"),
+                                _buildStatColumn(context, "456", "Following"),
+                                _buildStatButton(
+                                    context, Icons.star_outline, "Star"),
+                              ],
+                            ),
+                            const SizedBox(height: 48),
+                            Text(
+                              "User's posts and other information will appear here.",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                            const SizedBox(height: 500),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
+            // Close Button
+            Positioned(
+              top: 24 + MediaQuery.of(context).padding.top,
+              right: 24,
+              child: _StaggeredBubble(
+                animation: CurvedAnimation(
+                  parent: animation,
+                  curve: const Interval(0.9, 1.0,
+                      curve: Easing.emphasizedDecelerate),
+                ),
+                alignment: Alignment.center,
+                child: Opacity(
+                  opacity: model.expansionProgress,
+                  child: Transform.scale(
+                    scale: model.expansionProgress,
+                    child: IconButton.filledTonal(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildMetadata(BuildContext context, Animation<double> animation) {
-    final size = MediaQuery.of(context).size;
-    // Staggered timing for a high-end feel
-    // final usernameAnim = CurvedAnimation(
-    //   parent: animation,
-    //   curve: const Interval(0.85, 0.97, curve: Easing.standardDecelerate),
-    //   reverseCurve:
-    //       const Interval(0.25, 0.35, curve: Easing.emphasizedAccelerate),
-    // );
+  Widget _buildStatColumn(BuildContext context, String value, String label) {
+    return Column(
+      children: [
+        Text(value,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+      ],
+    );
+  }
+
+  Widget _buildStatButton(BuildContext context, IconData icon, String label) {
+    return Column(
+      children: [
+        IconButton.filledTonal(onPressed: () {}, icon: Icon(icon)),
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+      ],
+    );
+  }
+
+  Widget _buildMetadata(BuildContext context, Animation<double> animation,
+      ProfilePictureViewerModel model) {
     final nameAnim = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.9, 0.99, curve: Easing.standardDecelerate),
+      curve: const Interval(0.70, 0.85, curve: Easing.emphasizedDecelerate),
       reverseCurve:
           const Interval(0.20, 0.30, curve: Easing.standardAccelerate),
     );
     final followingAnim = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.86, 0.97, curve: Easing.standardDecelerate),
+      curve: const Interval(0.75, 0.90, curve: Easing.emphasizedDecelerate),
       reverseCurve:
           const Interval(0.15, 0.25, curve: Easing.standardAccelerate),
     );
     final profileAnim = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.92, 1.0, curve: Easing.standardDecelerate),
+      curve: const Interval(0.80, 0.95, curve: Easing.emphasizedDecelerate),
       reverseCurve:
           const Interval(0.05, 0.15, curve: Easing.standardAccelerate),
     );
@@ -116,13 +221,13 @@ class ProfilePictureViewer extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Top Left: User Info (Cascading)
+        // Name Bubble
         Positioned(
-          top: size.height * 0.32,
-          left: 20,
+          top: 40,
+          left: 40,
           child: _StaggeredBubble(
             animation: nameAnim,
-            alignment: Alignment.centerRight,
+            alignment: Alignment.centerLeft,
             child: _Bubble(
               supportText: post.person.userName,
               text: post.person.name,
@@ -133,11 +238,11 @@ class ProfilePictureViewer extends StatelessWidget {
             ),
           ),
         ),
-        // Bottom: Actions (Cascading)
+        // Actions
         Positioned(
           left: 0,
           right: 0,
-          bottom: size.height * 0.5 - 200,
+          bottom: 40,
           child: Center(
             child: Wrap(
               spacing: 8,
@@ -146,7 +251,7 @@ class ProfilePictureViewer extends StatelessWidget {
               children: [
                 _StaggeredBubble(
                   animation: followingAnim,
-                  alignment: Alignment.bottomCenter,
+                  alignment: Alignment.centerRight,
                   child: _ActionBubble(
                     label: 'Following',
                     icon: Icons.done,
@@ -157,8 +262,9 @@ class ProfilePictureViewer extends StatelessWidget {
                 ),
                 _StaggeredBubble(
                   animation: profileAnim,
-                  alignment: Alignment.bottomCenter,
+                  alignment: Alignment.centerRight,
                   child: _ActionBubble(
+                    onTap: model.expandToProfile,
                     label: 'Profile',
                     icon: Icons.north_east,
                     backgroundColor:
@@ -192,10 +298,13 @@ class _StaggeredBubble extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        return Transform.scale(
-          scale: animation.value,
-          alignment: alignment,
-          child: child,
+        return Opacity(
+          opacity: animation.value,
+          child: Transform.scale(
+            scale: animation.value,
+            alignment: alignment,
+            child: child,
+          ),
         );
       },
       child: child,
@@ -231,6 +340,7 @@ class _Bubble extends StatelessWidget {
               bottomRight: Radius.circular(8)),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               supportText,
@@ -293,23 +403,27 @@ class _ActionBubble extends StatelessWidget {
   final IconData icon;
   final Color backgroundColor;
   final Color textColor;
+  final VoidCallback? onTap;
 
   const _ActionBubble({
     required this.label,
     required this.icon,
     required this.backgroundColor,
     required this.textColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
         height: 64,
+        width: 140,
         child: FilledButton.icon(
           style: ButtonStyle(
+            elevation: const WidgetStatePropertyAll(0),
             backgroundColor: WidgetStatePropertyAll(backgroundColor),
           ),
-          onPressed: () {},
+          onPressed: onTap ?? () {},
           icon: Icon(icon, color: textColor, size: 18),
           label: Text(
             label,
