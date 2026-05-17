@@ -158,3 +158,127 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
     );
   }
 }
+
+enum SpringDirection { horizontal, vertical }
+
+class ExpressiveIconButton extends StatefulWidget {
+  final bool isSelected;
+  final VoidCallback onTap;
+  final IconData icon;
+  final double selectedLength;
+  final double unselectedLength;
+  final SpringDirection direction;
+  final Color? selectedBg;
+  final Color? unselectedBg;
+  final Color? selectedContent;
+  final Color? unselectedContent;
+
+  const ExpressiveIconButton({
+    super.key,
+    required this.isSelected,
+    required this.onTap,
+    required this.icon,
+    this.selectedLength = 64.0,
+    this.unselectedLength = 56.0,
+    this.direction = SpringDirection.horizontal,
+    this.selectedBg,
+    this.unselectedBg,
+    this.selectedContent,
+    this.unselectedContent,
+  });
+
+  @override
+  State<ExpressiveIconButton> createState() => _ExpressiveIconButtonState();
+}
+
+class _ExpressiveIconButtonState extends State<ExpressiveIconButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, upperBound: 1.5);
+    if (widget.isSelected) _controller.value = 1.0;
+  }
+
+  @override
+  void didUpdateWidget(ExpressiveIconButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isSelected != oldWidget.isSelected) {
+      _runSpring(widget.isSelected ? 1.0 : 0.0);
+    }
+  }
+
+  void _runSpring(double target) {
+    final simulation = SpringSimulation(
+      const SpringDescription(
+        mass: 1.2,
+        stiffness: 1000,
+        damping: 25,
+      ),
+      _controller.value,
+      target,
+      0,
+    );
+    _controller.animateWith(simulation);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final bgSelected = widget.selectedBg ?? theme.colorScheme.primary;
+    final bgUnselected =
+        widget.unselectedBg ?? theme.colorScheme.surfaceContainerHigh;
+    final contentSelected =
+        widget.selectedContent ?? theme.colorScheme.onPrimary;
+    final contentUnselected =
+        widget.unselectedContent ?? theme.colorScheme.onSurfaceVariant;
+
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final t = _controller.value;
+          final clampedT = t.clamp(0.0, 1.0);
+
+          final currentLength = widget.unselectedLength +
+              (t * (widget.selectedLength - widget.unselectedLength));
+
+          final width = widget.direction == SpringDirection.horizontal
+              ? currentLength
+              : widget.unselectedLength;
+          final height = widget.direction == SpringDirection.vertical
+              ? currentLength
+              : widget.unselectedLength;
+
+          return Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              color: Color.lerp(bgUnselected, bgSelected, clampedT),
+              borderRadius: BorderRadius.circular(
+                clampedT > 0.5 ? 16 : widget.unselectedLength / 2,
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                widget.icon,
+                color: Color.lerp(contentUnselected, contentSelected, clampedT),
+                size: (widget.unselectedLength * 0.45) + (t * 2.0),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

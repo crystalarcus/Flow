@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_shapes/material_shapes.dart';
+import 'package:provider/provider.dart';
 import 'package:redesigned/core/models/post.dart';
+import 'package:redesigned/widgets/profile_picture_viewer_model.dart';
 import 'package:redesigned/widgets/utils/m3expressive/expressive_button.dart';
 
 class ExpressiveRectTween extends MaterialRectArcTween {
@@ -30,58 +32,66 @@ class ProfilePictureViewer extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
 
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return Scaffold(
-          backgroundColor:
-              theme.colorScheme.surface.withValues(alpha: animation.value),
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-          body: child,
-        );
-      },
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Center(
-              child: Hero(
-                tag: 'pfp_${post.postId}',
-                createRectTween: (begin, end) =>
-                    ExpressiveRectTween(begin: begin, end: end),
-                child: Material(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: MaterialShapes.pentagon(
-                        color: Colors.transparent,
-                        size: size.width - 120,
-                        imageFit: BoxFit.cover,
-                        image: CachedNetworkImageProvider(
-                          post.person.pfpPath,
-                        )),
+    return ChangeNotifierProvider(
+      create: (context) => ProfilePictureViewerModel(),
+      child: Consumer<ProfilePictureViewerModel>(
+        builder: (context, model, child) {
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              return Scaffold(
+                backgroundColor: theme.colorScheme.surface
+                    .withValues(alpha: animation.value),
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
+                body: child,
+              );
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Hero(
+                      tag: 'pfp_${post.postId}',
+                      createRectTween: (begin, end) =>
+                          ExpressiveRectTween(begin: begin, end: end),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: MaterialShapes.pentagon(
+                              color: Colors.transparent,
+                              size: size.width - 120,
+                              imageFit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(
+                                post.person.pfpPath,
+                              )),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildMetadata(context, animation, model),
+                  // Room for more content later
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            _buildMetadata(context, animation),
-            // Room for more content later
-            const SizedBox(height: 100),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildMetadata(BuildContext context, Animation<double> animation) {
+  Widget _buildMetadata(BuildContext context, Animation<double> animation,
+      ProfilePictureViewerModel model) {
     // Staggered timing for a high-end feel
     final nameAnim = CurvedAnimation(
       parent: animation,
@@ -132,7 +142,6 @@ class ProfilePictureViewer extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
-            spacing: 8,
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -143,25 +152,28 @@ class ProfilePictureViewer extends StatelessWidget {
                 alignment: Alignment.center,
                 child: ExpressiveButton(
                   height: 64,
-                  isSelected: false,
+                  isSelected: model.isFollowing,
                   persistText: true,
                   icon: Icons.done,
-                  onTap: () {},
+                  onTap: model.toggleFollowing,
                   text: "Following",
                 ),
               )),
+              SizedBox(width: 4),
               _StaggeredBubble(
-                  animation: profileAnim,
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 56,
-                    child: ExpressiveButton(
-                      height: 64,
-                      isSelected: false,
-                      onTap: () {},
-                      icon: Icons.star_outline,
-                    ),
-                  )),
+                animation: profileAnim,
+                alignment: Alignment.center,
+                child: SizedBox(
+                  height: 64,
+                  child: ExpressiveIconButton(
+                    unselectedLength: 56,
+                    selectedLength: 72,
+                    isSelected: model.isStarred,
+                    onTap: model.toggleStar,
+                    icon: model.isStarred ? Icons.star : Icons.star_outline,
+                  ),
+                ),
+              )
             ],
           ),
         ),
