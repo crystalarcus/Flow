@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
+enum SpringDirection { horizontal, vertical }
+
 class ExpressiveButton extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final IconData? icon;
   final String? text;
   final bool persistText;
-  final double height;
+  final double selectedLength;
+  final double unselectedLength;
+  final double thickness;
+  final SpringDirection direction;
   final TextStyle? textStyle;
   final Color? selectedBg;
   final Color? unselectedBg;
@@ -21,13 +26,18 @@ class ExpressiveButton extends StatefulWidget {
     this.icon,
     this.text,
     this.persistText = false,
-    this.height = 56.0,
+    double? height,
+    double? selectedLength,
+    double? unselectedLength,
+    this.direction = SpringDirection.horizontal,
     this.textStyle,
     this.selectedBg,
     this.unselectedBg,
     this.selectedContent,
     this.unselectedContent,
-  });
+  })  : thickness = height ?? 56.0,
+        unselectedLength = unselectedLength ?? 42.0,
+        selectedLength = selectedLength ?? (unselectedLength ?? 42) + 24.0;
 
   @override
   State<ExpressiveButton> createState() => _ExpressiveButtonState();
@@ -96,20 +106,32 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
           // Clamp t for color/radius lerping so they don't "break" during overshoot
           final clampedT = t.clamp(0.0, 1.0);
 
+          final currentLength = widget.unselectedLength +
+              (t * (widget.selectedLength - widget.unselectedLength));
+
           return Container(
-            height: widget.height,
-            padding: EdgeInsets.symmetric(
-              // The horizontal padding "bounces", physically pushing neighbors
-              horizontal: 16.0 + (t * 6.0),
-            ),
-            constraints: BoxConstraints(
-              // The minWidth overshoots, creating the "catchy" bounce effect
-              minWidth: widget.height + (t * 40.0),
+            height: widget.direction == SpringDirection.horizontal
+                ? widget.thickness
+                : null,
+            width: widget.direction == SpringDirection.vertical
+                ? widget.thickness
+                : null,
+            padding: EdgeInsets.only(
+              left: widget.direction == SpringDirection.horizontal
+                  ? currentLength / 2
+                  : 12.0,
+              right: (widget.direction == SpringDirection.horizontal
+                      ? currentLength / 2
+                      : 12.0) +
+                  8,
+              top: widget.direction == SpringDirection.vertical
+                  ? currentLength / 2
+                  : 0.0,
             ),
             decoration: BoxDecoration(
               color: Color.lerp(bgUnselected, bgSelected, clampedT),
               borderRadius: BorderRadius.circular(
-                clampedT > 0.5 ? 14 : widget.height / 2,
+                clampedT > 0.5 ? 14 : widget.thickness / 2,
               ),
             ),
             child: Row(
@@ -158,8 +180,6 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
     );
   }
 }
-
-enum SpringDirection { horizontal, vertical }
 
 class ExpressiveIconButton extends StatefulWidget {
   final bool isSelected;

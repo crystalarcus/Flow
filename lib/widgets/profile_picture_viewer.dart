@@ -1,6 +1,7 @@
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:material_shapes/material_shapes.dart';
 import 'package:provider/provider.dart';
 import 'package:redesigned/core/models/post.dart';
@@ -141,24 +142,22 @@ class ProfilePictureViewer extends StatelessWidget {
         // Action Buttons
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Wrap(
             children: [
-              Expanded(
-                  child: _StaggeredBubble(
+              _StaggeredBubble(
                 animation: followingAnim,
                 alignment: Alignment.center,
                 child: ExpressiveButton(
                   height: 64,
+                  unselectedLength: MediaQuery.of(context).size.width - 248,
                   isSelected: model.isFollowing,
                   persistText: true,
                   icon: Icons.done,
                   onTap: model.toggleFollowing,
                   text: "Following",
+                  textStyle: GoogleFonts.manrope(fontSize: 14),
                 ),
-              )),
+              ),
               SizedBox(width: 4),
               _StaggeredBubble(
                 animation: profileAnim,
@@ -166,7 +165,7 @@ class ProfilePictureViewer extends StatelessWidget {
                 child: SizedBox(
                   height: 64,
                   child: ExpressiveIconButton(
-                    unselectedLength: 56,
+                    unselectedLength: 58,
                     selectedLength: 72,
                     isSelected: model.isStarred,
                     onTap: model.toggleStar,
@@ -177,6 +176,34 @@ class ProfilePictureViewer extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(height: 28),
+        SvgPicture.asset("assets/zigzag.svg"),
+        SizedBox(height: 28),
+        _StaggeredBubble(
+          animation: animation,
+          alignment: Alignment.topCenter,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildStatColumn(context, "24K", "Followers"),
+              _buildStatColumn(context, "14", "Following")
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildStatColumn(BuildContext context, String value, String label) {
+    return Column(
+      children: [
+        Text(value,
+            style: GoogleFonts.audiowide(
+                textStyle: Theme.of(context)
+                    .textTheme
+                    .displayMedium
+                    ?.copyWith(fontWeight: FontWeight.bold))),
+        Text(label, style: Theme.of(context).textTheme.bodyLarge),
       ],
     );
   }
@@ -209,37 +236,37 @@ class _StaggeredBubble extends StatelessWidget {
   }
 }
 
-class _ActionBubble extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color backgroundColor;
-  final Color textColor;
+// class _ActionBubble extends StatelessWidget {
+//   final String label;
+//   final IconData icon;
+//   final Color backgroundColor;
+//   final Color textColor;
 
-  const _ActionBubble({
-    required this.label,
-    required this.icon,
-    required this.backgroundColor,
-    required this.textColor,
-  });
+//   const _ActionBubble({
+//     required this.label,
+//     required this.icon,
+//     required this.backgroundColor,
+//     required this.textColor,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        height: 64,
-        child: FilledButton.icon(
-          style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(backgroundColor),
-          ),
-          onPressed: () {},
-          icon: Icon(icon, color: textColor, size: 18),
-          label: Text(
-            label,
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: textColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
-          ),
-        ));
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//         height: 64,
+//         child: FilledButton.icon(
+//           style: ButtonStyle(
+//             backgroundColor: WidgetStatePropertyAll(backgroundColor),
+//           ),
+//           onPressed: () {},
+//           icon: Icon(icon, color: textColor, size: 18),
+//           label: Text(
+//             label,
+//             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+//                   color: textColor,
+//                   fontWeight: FontWeight.w600,
+//                   fontSize: 16,
+//                 ),
+//           ),
+//         ));
+//   }
+// }
