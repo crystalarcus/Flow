@@ -446,7 +446,7 @@ class _MobilePostState extends State<MobilePost> {
                               opaque: false,
                               barrierDismissible: true,
                               transitionDuration: Durations.extralong1,
-                              reverseTransitionDuration: Durations.short4,
+                              reverseTransitionDuration: Durations.medium4,
                               pageBuilder:
                                   (context, animation, secondaryAnimation) {
                                 return ProfilePictureViewer(
@@ -569,6 +569,8 @@ class _MobilePostState extends State<MobilePost> {
                       ))),
               SizedBox(width: 4),
               ExpressiveButton(
+                  unselectedLength: 32,
+                  selectedLength: 46,
                   icon: liked ? Icons.favorite : Icons.favorite_border_outlined,
                   persistText: true,
                   text: "24K",

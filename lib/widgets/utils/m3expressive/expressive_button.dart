@@ -18,6 +18,7 @@ class ExpressiveButton extends StatefulWidget {
   final Color? unselectedBg;
   final Color? selectedContent;
   final Color? unselectedContent;
+  final bool keepRound;
 
   const ExpressiveButton({
     super.key,
@@ -26,6 +27,7 @@ class ExpressiveButton extends StatefulWidget {
     this.icon,
     this.text,
     this.persistText = false,
+    this.keepRound = false,
     double? height,
     double? selectedLength,
     double? unselectedLength,
@@ -37,7 +39,7 @@ class ExpressiveButton extends StatefulWidget {
     this.unselectedContent,
   })  : thickness = height ?? 56.0,
         unselectedLength = unselectedLength ?? 42.0,
-        selectedLength = selectedLength ?? (unselectedLength ?? 42) + 24.0;
+        selectedLength = selectedLength ?? (unselectedLength ?? 42) + 12.0;
 
   @override
   State<ExpressiveButton> createState() => _ExpressiveButtonState();
@@ -123,15 +125,17 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
               right: (widget.direction == SpringDirection.horizontal
                       ? currentLength / 2
                       : 12.0) +
-                  8,
+                  6,
               top: widget.direction == SpringDirection.vertical
                   ? currentLength / 2
                   : 0.0,
             ),
             decoration: BoxDecoration(
-              color: Color.lerp(bgUnselected, bgSelected, clampedT),
+              color: widget.isSelected ? bgSelected : bgUnselected,
               borderRadius: BorderRadius.circular(
-                clampedT > 0.5 ? 14 : widget.thickness / 2,
+                (clampedT > 0.5 && !widget.keepRound)
+                    ? 14
+                    : widget.thickness / 2,
               ),
             ),
             child: Row(
@@ -142,8 +146,8 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
                   Icon(
                     weight: 600,
                     widget.icon,
-                    color: Color.lerp(
-                        contentUnselected, contentSelected, clampedT),
+                    color:
+                        widget.isSelected ? contentSelected : contentUnselected,
                     size: 24,
                   ),
                 // Text expansion logic
@@ -164,8 +168,9 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
                           style:
                               (widget.textStyle ?? theme.textTheme.labelLarge)!
                                   .copyWith(
-                            color: Color.lerp(
-                                contentUnselected, contentSelected, clampedT),
+                            color: widget.isSelected
+                                ? contentSelected
+                                : contentUnselected,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -192,6 +197,7 @@ class ExpressiveIconButton extends StatefulWidget {
   final Color? unselectedBg;
   final Color? selectedContent;
   final Color? unselectedContent;
+  final bool keepRound;
 
   const ExpressiveIconButton({
     super.key,
@@ -205,6 +211,7 @@ class ExpressiveIconButton extends StatefulWidget {
     this.unselectedBg,
     this.selectedContent,
     this.unselectedContent,
+    this.keepRound = false,
   });
 
   @override
@@ -286,7 +293,9 @@ class _ExpressiveIconButtonState extends State<ExpressiveIconButton>
             decoration: BoxDecoration(
               color: Color.lerp(bgUnselected, bgSelected, clampedT),
               borderRadius: BorderRadius.circular(
-                clampedT > 0.5 ? 16 : widget.unselectedLength / 2,
+                (clampedT > 0.5 && !widget.keepRound)
+                    ? 16
+                    : widget.unselectedLength / 2,
               ),
             ),
             child: Center(

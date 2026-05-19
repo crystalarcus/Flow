@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePictureViewerModel extends ChangeNotifier {
@@ -10,8 +11,24 @@ class ProfilePictureViewerModel extends ChangeNotifier {
   bool get isFollowing => _isFollowing;
   bool get isStarred => _isStarred;
 
+  ColorScheme? _colorScheme;
+  ColorScheme? get colorScheme => _colorScheme;
+
   ProfilePictureViewerModel() {
     // scrollController.addListener(_onScroll);
+  }
+
+  void extractColors(String imagePath, Brightness brightness) async {
+    try {
+      final ColorScheme newScheme = await ColorScheme.fromImageProvider(
+        provider: CachedNetworkImageProvider(imagePath),
+        brightness: brightness,
+      );
+      _colorScheme = newScheme;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error extracting color scheme: $e");
+    }
   }
 
   void toggleFollowing() {
