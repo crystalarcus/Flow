@@ -209,45 +209,51 @@ class _RootViewState extends State<RootView>
                       ? messageFAB()
                       : const SizedBox(),
             ),
-      bottomNavigationBar: AnimatedSwitcher(
+      bottomNavigationBar: AnimatedContainer(
         duration: Durations.medium3,
-        transitionBuilder: (child, animation) => SizeTransition(
-          sizeFactor: animation,
-          axisAlignment: 1,
-          child: child,
-        ),
-        child: context.watch<AppService>().isNavBarVisible
-            ? RepaintBoundary(
-                child: DisappearingBottomNavigationBar(
-                  key: const ValueKey('bottom_bar'),
-                  barAnimation: _barAnimation,
-                  selectedIndex: currentIndex,
-                  onDestinationSelected: (int index) {
-                    if (currentIndex != index) {
-                      switch (index) {
-                        case 0:
-                          context.go('/home');
-                          break;
-                        case 1:
-                          context.go('/stories');
-                        case 2:
-                          context.go('/messages');
-                          break;
-                        case 3:
-                          context.go('/notification');
-                          break;
-                        case 4:
-                          context.go('/settings');
-                          break;
-                      }
-                      setState(() {
-                        currentIndex = index;
-                      });
+        curve: Easing.emphasizedDecelerate,
+        height: context.watch<AppService>().isNavBarVisible ? 80 : 0,
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          maxHeight: 80,
+          child: AnimatedSlide(
+            duration: Durations.medium3,
+            curve: Easing.emphasizedDecelerate,
+            offset: context.watch<AppService>().isNavBarVisible
+                ? Offset.zero
+                : const Offset(0, 1),
+            child: RepaintBoundary(
+              child: DisappearingBottomNavigationBar(
+                key: const ValueKey('bottom_bar'),
+                barAnimation: _barAnimation,
+                selectedIndex: currentIndex,
+                onDestinationSelected: (int index) {
+                  if (currentIndex != index) {
+                    switch (index) {
+                      case 0:
+                        context.go('/home');
+                        break;
+                      case 1:
+                        context.go('/stories');
+                      case 2:
+                        context.go('/messages');
+                        break;
+                      case 3:
+                        context.go('/notification');
+                        break;
+                      case 4:
+                        context.go('/settings');
+                        break;
                     }
-                  },
-                ),
-              )
-            : const SizedBox(key: ValueKey('empty_bar')),
+                    setState(() {
+                      currentIndex = index;
+                    });
+                  }
+                },
+              ),
+            ),
+          ),
+        ),
       ),
       body: Row(
         children: [

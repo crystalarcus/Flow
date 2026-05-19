@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:redesigned/core/models/story.dart';
 import 'package:redesigned/core/navigation/root_view.dart';
+import 'package:redesigned/core/services/app_service.dart';
 import 'package:redesigned/core/services/auth_service.dart';
 import 'package:redesigned/core/utils/screen_transitions.dart';
 import 'package:redesigned/data/mock_data.dart';
@@ -51,7 +52,7 @@ final router = GoRouter(
                 path: '/home',
                 pageBuilder: (context, state) => SlideBottomTransitionPage(
                     child: ChangeNotifierProvider<HomeViewModel>(
-                      create: (_) => HomeViewModel(),
+                      create: (_) => HomeViewModel(context.read<AppService>()),
                       child: const HomeScreen(),
                     ),
                     state: state)),

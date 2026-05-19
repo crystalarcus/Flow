@@ -445,7 +445,7 @@ class _MobilePostState extends State<MobilePost> {
                             PageRouteBuilder(
                               opaque: false,
                               barrierDismissible: true,
-                              transitionDuration: Durations.extralong1,
+                              transitionDuration: Durations.long2,
                               reverseTransitionDuration: Durations.medium4,
                               pageBuilder:
                                   (context, animation, secondaryAnimation) {

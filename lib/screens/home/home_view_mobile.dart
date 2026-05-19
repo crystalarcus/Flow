@@ -23,6 +23,7 @@ class MobileHomeView extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       body: SafeArea(
         child: CustomScrollView(
+          controller: viewModel.scrollController,
           slivers: [
             SliverAppBar(
               toolbarHeight: 63,
