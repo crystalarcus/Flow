@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:redesigned/core/models/chat.dart';
 import 'package:redesigned/screens/messages/chat/chat_view_model.dart';
@@ -145,60 +146,52 @@ class _MobileInputWidget extends StatelessWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(6),
+        padding: const EdgeInsets.all(8),
         child: SizedBox(
-          height: 56,
-          child: TextField(
-            onChanged: viewModel.onInputChanged,
-            controller: viewModel.textEditingController,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-              isDense: true,
-              hintText: "Message...",
-              hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
-              prefixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.camera_alt, size: 24)),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.attach_file_outlined, size: 24),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.emoji_emotions_outlined, size: 24),
-                  ),
-                  // Only rebuild the mic/send icon when input changes
-                  Selector<ChatViewModel, bool>(
-                    selector: (_, vm) => vm.currentInput.isEmpty,
-                    builder: (context, isEmpty, child) {
-                      return isEmpty
-                          ? IconButton(
+            height: 56,
+            child: Row(
+              spacing: 4,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: TextField(
+                    onChanged: viewModel.onInputChanged,
+                    controller: viewModel.textEditingController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor:
+                          Theme.of(context).colorScheme.surfaceContainerHigh,
+                      isDense: true,
+                      hintText: "Message...",
+                      hintStyle: TextStyle(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                      prefixIcon: IconButton(
+                          onPressed: () {},
+                          icon: IconButton(
                               onPressed: () {},
-                              icon: const Icon(Icons.mic, size: 24),
-                            )
-                          : IconButton(
-                              onPressed: viewModel.sendMessage,
-                              icon: const Icon(Icons.send_outlined, size: 24),
-                            );
-                    },
+                              icon: const Icon(Icons.add, size: 24))),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none),
+                    ),
                   ),
-                  const SizedBox(width: 4)
-                ],
-              ),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none),
-            ),
-          ),
-        ),
+                ),
+                SizedBox(
+                  height: 56,
+                  width: 48,
+                  child: IconButton.filledTonal(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Symbols.send,
+                        fill: 0,
+                      )),
+                )
+              ],
+            )),
       ),
     );
   }

@@ -183,32 +183,32 @@ class _RootViewState extends State<RootView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: !context.watch<AppService>().isNavBarVisible ||
-              // ? const SizedBox()
-              MediaQuery.sizeOf(context).width > 600
-          ? null
-          : AnimatedSwitcher(
-              switchInCurve: Easing.emphasizedDecelerate,
-              switchOutCurve: Easing.emphasizedAccelerate,
-              duration: Durations.medium3,
-              transitionBuilder: (child, animation) => FadeTransition(
-                opacity: animation,
-                child: ScaleTransition(
-                  alignment: Alignment.bottomRight,
-                  scale: animation,
-                  child: child,
-                ),
-              ),
-              layoutBuilder: (currentChild, previousChildren) => Stack(
-                alignment: Alignment.bottomRight,
-                children: [currentChild!, ...previousChildren],
-              ),
-              child: currentIndex == 0
-                  ? homeScreenFAB()
-                  : currentIndex == 2
-                      ? messageFAB()
-                      : const SizedBox(),
-            ),
+      floatingActionButton: AnimatedSwitcher(
+        switchInCurve: Easing.emphasizedDecelerate,
+        switchOutCurve: Easing.emphasizedAccelerate,
+        duration: Durations.medium3,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            alignment: Alignment.bottomRight,
+            scale: animation,
+            child: child,
+          ),
+        ),
+        layoutBuilder: (currentChild, previousChildren) => Stack(
+          alignment: Alignment.bottomRight,
+          children: [currentChild!, ...previousChildren],
+        ),
+        child: !context.watch<AppService>().isNavBarVisible ||
+                // ? const SizedBox()
+                MediaQuery.sizeOf(context).width > 600
+            ? const SizedBox()
+            : currentIndex == 0
+                ? homeScreenFAB()
+                : currentIndex == 2
+                    ? messageFAB()
+                    : const SizedBox(),
+      ),
       bottomNavigationBar: AnimatedContainer(
         duration: Durations.medium3,
         curve: Easing.emphasizedDecelerate,

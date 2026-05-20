@@ -3,7 +3,7 @@ import 'package:flutter/physics.dart';
 
 enum SpringDirection { horizontal, vertical }
 
-class ExpressiveButton extends StatefulWidget {
+class ExpressiveSpringButton extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final IconData? icon;
@@ -20,7 +20,7 @@ class ExpressiveButton extends StatefulWidget {
   final Color? unselectedContent;
   final bool keepRound;
 
-  const ExpressiveButton({
+  const ExpressiveSpringButton({
     super.key,
     required this.isSelected,
     required this.onTap,
@@ -42,10 +42,10 @@ class ExpressiveButton extends StatefulWidget {
         selectedLength = selectedLength ?? (unselectedLength ?? 42) + 12.0;
 
   @override
-  State<ExpressiveButton> createState() => _ExpressiveButtonState();
+  State<ExpressiveSpringButton> createState() => _ExpressiveSpringButtonState();
 }
 
-class _ExpressiveButtonState extends State<ExpressiveButton>
+class _ExpressiveSpringButtonState extends State<ExpressiveSpringButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -58,7 +58,7 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
   }
 
   @override
-  void didUpdateWidget(ExpressiveButton oldWidget) {
+  void didUpdateWidget(ExpressiveSpringButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isSelected != oldWidget.isSelected) {
       _runSpring(widget.isSelected ? 1.0 : 0.0);
@@ -186,7 +186,7 @@ class _ExpressiveButtonState extends State<ExpressiveButton>
   }
 }
 
-class ExpressiveIconButton extends StatefulWidget {
+class ExpressiveSpringIconButton extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final IconData icon;
@@ -199,7 +199,7 @@ class ExpressiveIconButton extends StatefulWidget {
   final Color? unselectedContent;
   final bool keepRound;
 
-  const ExpressiveIconButton({
+  const ExpressiveSpringIconButton({
     super.key,
     required this.isSelected,
     required this.onTap,
@@ -215,10 +215,11 @@ class ExpressiveIconButton extends StatefulWidget {
   });
 
   @override
-  State<ExpressiveIconButton> createState() => _ExpressiveIconButtonState();
+  State<ExpressiveSpringIconButton> createState() =>
+      _ExpressiveSpringIconButtonState();
 }
 
-class _ExpressiveIconButtonState extends State<ExpressiveIconButton>
+class _ExpressiveSpringIconButtonState extends State<ExpressiveSpringIconButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -230,7 +231,7 @@ class _ExpressiveIconButtonState extends State<ExpressiveIconButton>
   }
 
   @override
-  void didUpdateWidget(ExpressiveIconButton oldWidget) {
+  void didUpdateWidget(ExpressiveSpringIconButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isSelected != oldWidget.isSelected) {
       _runSpring(widget.isSelected ? 1.0 : 0.0);
@@ -304,6 +305,133 @@ class _ExpressiveIconButtonState extends State<ExpressiveIconButton>
                 color: Color.lerp(contentUnselected, contentSelected, clampedT),
                 size: (widget.unselectedLength * 0.45) + (t * 2.0),
               ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class ExpressiveButton extends StatefulWidget {
+  final bool isSelected;
+  final VoidCallback onTap;
+  final IconData? icon;
+  final String? text;
+  final Color? selectedBackgroundColor;
+  final Color? unselectedBackgroundColor;
+  final Color? selectedContentColor;
+  final Color? unselectedContentColor;
+  final double thickness;
+  final Duration duration;
+
+  const ExpressiveButton({
+    super.key,
+    required this.isSelected,
+    required this.onTap,
+    this.icon,
+    this.text,
+    this.selectedBackgroundColor,
+    this.unselectedBackgroundColor,
+    this.selectedContentColor,
+    this.unselectedContentColor,
+    this.thickness = 48.0,
+    this.duration = const Duration(milliseconds: 250),
+  });
+
+  @override
+  State<ExpressiveButton> createState() => _ExpressiveButtonState();
+}
+
+class _ExpressiveButtonState extends State<ExpressiveButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this,
+        duration: widget.duration,
+        reverseDuration: Durations.short3);
+    _animation = CurvedAnimation(
+        parent: _controller,
+        curve: Easing.standard,
+        reverseCurve: Easing.standard);
+    if (widget.isSelected) _controller.value = 1.0;
+  }
+
+  @override
+  void didUpdateWidget(ExpressiveButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isSelected != oldWidget.isSelected) {
+      if (widget.isSelected) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final bgSelected =
+        widget.selectedBackgroundColor ?? theme.colorScheme.primary;
+    final bgUnselected = widget.unselectedBackgroundColor ??
+        theme.colorScheme.surfaceContainerHigh;
+    final contentSelected =
+        widget.selectedContentColor ?? theme.colorScheme.onPrimary;
+    final contentUnselected =
+        widget.unselectedContentColor ?? theme.colorScheme.onSurfaceVariant;
+
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          final t = _animation.value;
+
+          return Container(
+            height: widget.thickness,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: Color.lerp(bgUnselected, bgSelected, t),
+              borderRadius: BorderRadius.lerp(
+                BorderRadius.circular(widget.thickness / 2),
+                BorderRadius.circular(12),
+                t,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (widget.icon != null)
+                  Icon(
+                    widget.icon,
+                    color: Color.lerp(contentUnselected, contentSelected, t),
+                    size: 20,
+                  ),
+                if (widget.icon != null && widget.text != null)
+                  const SizedBox(width: 8),
+                if (widget.text != null)
+                  Text(
+                    widget.text!,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: Color.lerp(contentUnselected, contentSelected, t),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+              ],
             ),
           );
         },

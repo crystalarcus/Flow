@@ -445,7 +445,7 @@ class _MobilePostState extends State<MobilePost> {
                             PageRouteBuilder(
                               opaque: false,
                               barrierDismissible: true,
-                              transitionDuration: Durations.long2,
+                              transitionDuration: Durations.extralong1,
                               reverseTransitionDuration: Durations.medium4,
                               pageBuilder:
                                   (context, animation, secondaryAnimation) {
@@ -568,7 +568,7 @@ class _MobilePostState extends State<MobilePost> {
                         weight: 600,
                       ))),
               SizedBox(width: 4),
-              ExpressiveButton(
+              ExpressiveSpringButton(
                   unselectedLength: 32,
                   selectedLength: 46,
                   icon: liked ? Icons.favorite : Icons.favorite_border_outlined,

@@ -183,30 +183,29 @@ class ProfilePictureViewer extends StatelessWidget {
           child: Wrap(
             children: [
               _StaggeredBubble(
-                animation: followingAnim,
-                alignment: Alignment.center,
-                child: ExpressiveButton(
-                  icon: model.isFollowing ? Icons.done : Icons.add,
-                  text: model.isFollowing ? "Followed" : "Follow",
-                  unselectedContent: colorScheme.primaryContainer,
-                  unselectedBg: colorScheme.primary,
-                  selectedContent: colorScheme.onSecondaryContainer,
-                  selectedBg: colorScheme.secondaryContainer,
-                  height: 64,
-                  unselectedLength: MediaQuery.of(context).size.width - 248,
-                  isSelected: model.isFollowing,
-                  persistText: true,
-                  onTap: model.toggleFollowing,
-                  textStyle: GoogleFonts.manrope(fontSize: 14),
-                ),
-              ),
+                  animation: followingAnim,
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: MediaQuery.widthOf(context) - 124,
+                    child: ExpressiveButton(
+                      thickness: 64,
+                      icon: model.isFollowing ? Icons.done : Icons.add,
+                      text: model.isFollowing ? "Followed" : "Follow",
+                      unselectedContentColor: colorScheme.primaryContainer,
+                      unselectedBackgroundColor: colorScheme.primary,
+                      selectedContentColor: colorScheme.onSecondaryContainer,
+                      selectedBackgroundColor: colorScheme.secondaryContainer,
+                      isSelected: model.isFollowing,
+                      onTap: model.toggleFollowing,
+                    ),
+                  )),
               const SizedBox(width: 4),
               _StaggeredBubble(
                 animation: profileAnim,
                 alignment: Alignment.center,
                 child: SizedBox(
                   height: 64,
-                  child: ExpressiveIconButton(
+                  child: ExpressiveSpringIconButton(
                     selectedBg: colorScheme.tertiaryContainer,
                     selectedContent: colorScheme.onTertiaryContainer,
                     unselectedLength: 58,
@@ -234,21 +233,20 @@ class ProfilePictureViewer extends StatelessWidget {
         ),
         const SizedBox(height: 28),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildStatPill(
               context,
               icon: Icons.groups_rounded,
-              value: "24K",
+              value: "2.4K",
               label: "Followers",
               animation: followersAnim,
               colorScheme: colorScheme,
             ),
-            const SizedBox(width: 12),
             _buildStatPill(
               context,
               icon: Icons.person_add_rounded,
-              value: "14",
+              value: "140",
               label: "Following",
               animation: followingAnimStat,
               colorScheme: colorScheme,
@@ -271,30 +269,29 @@ class ProfilePictureViewer extends StatelessWidget {
       animation: animation,
       alignment: Alignment.center,
       child: Material(
-        color: colorScheme.surfaceContainerHigh,
+        color: colorScheme.surface,
         shape: const StadiumBorder(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                value,
-                style: GoogleFonts.audiowide(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.audiowide(
+                textStyle: Theme.of(context).textTheme.displayMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
               ),
-            ],
-          ),
+            ),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ],
         ),
       ),
     );
